@@ -3,7 +3,7 @@ def call(String token, String app_name, String templateName, String templatePara
 	    openshift.withProject('errata-qe-test'){
 			echo '--- Create app ${app_name} from the ${templateName} --->'
 			def objectsName
-			if(${app_name}.toLowerCase().contains('mysql')){
+			if(app_name.toLowerCase().contains('mysql')){
 				objectsName = (String[]) ["is/${app_name}", "bc/${app_name}", "dc/${app_name}", "svc/${app_name}"]
 			} else{
 				objectsName = (String[]) ["is/${app_name}-s2i", "is/${app_name}-basic", "bc/${app_name}-bc", "dc/${app_name}-rails", "route/${app_name}-route", "svc/${app_name}-svc"]

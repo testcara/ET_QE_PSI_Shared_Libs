@@ -1,14 +1,14 @@
-def call(String token, app_name, templateNameofET, templateNameofMysql){
+def call(String token, String app_name, String templateNameofET, String templateNameofMysql){
     openshift.withCluster('https://paas.psi.redhat.com', token) {
         openshift.withProject('errata-qe-test'){
             echo "--- Delete apps --->"
 
-            def etAppNames = ["${app_name}-1", "${app_name}-2", "${app_name}-3"]
-            def mysqlAppNames = ["${app_name}-1-mysql", "${app_name}-2-mysql", "${app_name}-3-mysql"]
-            etAppNames.each { app ->
+            def etapp_names = ["${app_name}-1", "${app_name}-2", "${app_name}-3"]
+            def mysqlapp_names = ["${app_name}-1-mysql", "${app_name}-2-mysql", "${app_name}-3-mysql"]
+            etapp_names.each { app ->
                 openshift.selector("all", [ app : "$app" ]).delete()
             }
-            mysqlAppNames.each { app ->
+            mysqlapp_names.each { app ->
                 openshift.selector("all", [ app : "$app" ]).delete()
             }
             def exist1 = openshift.selector("template", "$templateNameofET").exists()
