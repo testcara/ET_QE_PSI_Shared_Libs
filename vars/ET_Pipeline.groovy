@@ -1,7 +1,7 @@
 def call(String token, String appName, String templateNameofET, String templateNameofMysql, 
 	String etTemplateParameters, String mysqlTemplateParameters,
 	String templatePathofET, String templatePathofMysql,
-	String qe_testing, String cases_tags){
+	String qeTesting, String casesTags){
 
 	def RUN_USER = '1058980001'
 	def MSYQL_USER = "root"
@@ -12,7 +12,7 @@ def call(String token, String appName, String templateNameofET, String templateN
     containers: [
     containerTemplate(
         name: 'qe-testing-runner', 
-        image: 'docker-registry.upshift.redhat.com/errata-qe-test/qeTesting_upshift_runner:latest',
+        image: 'docker-registry.upshift.redhat.com/errata-qe-test/qe_testing_upshift_runner:latest',
         command: 'cat', 
         ttyEnabled: true,
         
