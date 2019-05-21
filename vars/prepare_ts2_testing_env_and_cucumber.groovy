@@ -35,8 +35,9 @@ def call(String token, String app_name, String etPod, String casesTags ){
       RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
       cucumber_cmd="TEST_ENV=qe_01 BZ_ADMIN_PASSWD=1HSSQE@redhat bundle exec cucumber -p remote"
       cucumber_report="--format json_pretty --strict -o cucumber-report-${app_name}.json features/remote"
-      #echo "---> Write the cucumber testing script ..."
-      ET_POD=${pod_name} RUN_ON_PSI=1 ${cucumber_cmd} ${cases_tags} ${cucumber_report}
+      echo "---> Write the cucumber testing script ..."
+      echo "ET_POD=${pod_name} RUN_ON_PSI=1 ${cucumber_cmd} ${cases_tags} ${cucumber_report}" > cucumber_report.sh
+      chmod +x cucumber_report.sh
       '''
     } //project
   } //cluster
