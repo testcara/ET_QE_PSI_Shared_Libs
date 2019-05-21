@@ -17,7 +17,7 @@ def call(String token, String app_name, String etPod, String casesTags ){
       sed -i "s/umb-qe/cucumber-umb-qe/g" ${umb_path}
       }
 
-      if [ "${casesTags}" =~ '@umb' ]
+      if [[ "${casesTags}" =~ '@umb' ]]
       then
         specify_runner_umb_for_cucumber_umb_cases
       fi
