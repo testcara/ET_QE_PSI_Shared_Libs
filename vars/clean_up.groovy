@@ -9,7 +9,7 @@ def call(String token, String name, String type){
                 break
                 case 'template':
                 echo "---> Clean template: $name ..."
-                openshift.selector("all", [ app : "$name" ]).delete()
+                openshift.selector("template", [ app : "$name" ]).delete()
                 break
             } //switch
         } //project
