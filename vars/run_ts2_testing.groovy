@@ -6,16 +6,15 @@ def call(String token, String app_name, String etPod, String casesTags ){
     sh "echo ${casesTags} > cases_tags"
 
     sh '''
-    pwd
-    ls
     reset_testing_host(){
       default_host="et-system-test-qe-01.usersys.redhat.com"
-      sed -i "s/${default_host}/${1}.cloud.paas.psi.redhat.com/g" features/remote/config/env.yml
+      env_path=$(find . -name 'env.yml')
+      sed -i "s/${default_host}/${1}.cloud.paas.psi.redhat.com/g" ${env_path}
     }
 
       specify_runner_umb_for_cucumber_umb_cases(){
-        umb_config="features/remote/support/umb.rb"
-        sed -i "s/umb-qe/cucumber-umb-qe/g" $umb_config
+      umb_path=$(find . -name 'umb.rb')
+      sed -i "s/umb-qe/cucumber-umb-qe/g" ${umb_path}
       }
 
       if [ "${casesTags}" =~ '@umb' ]
@@ -29,6 +28,9 @@ def call(String token, String app_name, String etPod, String casesTags ){
       cases_tags=$(cat cases_tags)
 
       reset_testing_host ${app_name}
+
+      gem_file_path=$(find . -name "Gemfile.lock" | sed "s/Gemfile.lock//")
+      cd ${gem_file_path}
 
       RAILS_ENV=test bundle install
       cucumber_cmd="TEST_ENV=qe_01 BZ_ADMIN_PASSWD=1HSSQE@redhat bundle exec cucumber -p remote"
