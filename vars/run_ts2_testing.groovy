@@ -33,12 +33,13 @@ def call(String token, String app_name, String etPod, String casesTags){
       cd ${gem_file_path}
 
       RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
-      cucumber_cmd="TEST_ENV=qe_01 BZ_ADMIN_PASSWD=1HSSQE@redhat bundle exec cucumber -p remote"
-      cucumber_report="--format json_pretty --strict -o cucumber-report-${app_name}.json features/remote"
+      cucumber_cmd="ET_POD=${pod_name} RUN_ON_PSI=1 TEST_ENV=qe_01 BZ_ADMIN_PASSWD=1HSSQE@redhat bundle exec cucumber -p remote"
+      cucumber_report="--format json_pretty --strict -o cucumber-report-${app_name}.json"
+      features_dir="features/remote"
+      rerun_report="-f pretty -f rerun --out rerun.txt"
+      rerun_cmd="@rerun.txt"
       echo "---> Write the cucumber testing script ..."
-      echo "ET_POD=${pod_name} RUN_ON_PSI=1 ${cucumber_cmd} ${cases_tags} ${cucumber_report}" > cucumber_report.sh
-      chmod +x cucumber_report.sh
-      sleep 3600
+      echo "${cucumber_cmd} ${cases_tags} ${cucumber_report} ${rerun_report} ${features_dir} || ${cucumber_cmd} ${rerun_cmd} ${features_dir}" > cucumber_report.sh
       ./cucumber_report.sh
       '''
     } //project
