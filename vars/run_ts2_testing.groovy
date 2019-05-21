@@ -38,7 +38,7 @@ def call(String token, String app_name, String etPod, String casesTags){
       echo "---> Write the cucumber testing script ..."
       echo "ET_POD=${pod_name} RUN_ON_PSI=1 ${cucumber_cmd} ${cases_tags} ${cucumber_report}" > cucumber_report.sh
       chmod +x cucumber_report.sh
-      ./cucumber_reprot.sh
+      ./cucumber_report.sh
       '''
     } //project
   } //cluster
