@@ -1,9 +1,9 @@
 def call(String token, String app_name, String etPod, String casesTags ){
   openshift.withCluster('https://paas.psi.redhat.com', token) {
     openshift.withProject('errata-qe-test'){
-    sh "echo ${app_name}" > app_name
-    sh "echo ${etPod}" > et_pod
-    sh "echo ${casesTags}" > cases_tags
+    sh "echo ${app_name} > app_name"
+    sh "echo ${etPod} > et_pod"
+    sh "echo ${casesTags} > cases_tags"
 
     sh '''
     reset_testing_host(){
