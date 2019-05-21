@@ -39,7 +39,7 @@ def call(String token, String app_name, String etPod, String casesTags){
       rerun_report="-f pretty -f rerun --out rerun.txt"
       rerun_cmd="@rerun.txt"
       echo "---> Write the cucumber testing script ..."
-      echo "${cucumber_cmd} ${cases_tags} ${cucumber_report} ${rerun_report} ${features_dir} || ${cucumber_cmd} ${rerun_cmd} ${features_dir}" > cucumber_report.sh
+      echo "${cucumber_cmd} ${cases_tags} ${cucumber_report} ${rerun_report} ${features_dir} || ${cucumber_cmd} ${rerun_cmd}" > cucumber_report.sh
       chmod +x cucumber_report.sh
       ./cucumber_report.sh
       '''
