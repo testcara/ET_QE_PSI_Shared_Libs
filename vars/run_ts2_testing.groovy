@@ -1,4 +1,4 @@
-def call(String token, String app_name, String etPod, String casesTags ){
+def call(String token, String app_name, String etPod, String casesTags){
   openshift.withCluster('https://paas.psi.redhat.com', token) {
     openshift.withProject('errata-qe-test'){
     sh "echo ${app_name} > app_name"
@@ -18,14 +18,14 @@ def call(String token, String app_name, String etPod, String casesTags ){
         sed -i "s/umb-qe/cucumber-umb-qe/g" ${umb_path}
       }
 
-      if [[ "${casesTags}" =~ '@umb' ]]
-      then
-        specify_runner_umb_for_cucumber_umb_cases
-      fi
-
       pod_name=$(cat et_pod)
       app_name=$(cat app_name)
       cases_tags=$(cat cases_tags)
+
+      if [[ "${cases_tags}" =~ '@umb' ]]
+      then
+        specify_runner_umb_for_cucumber_umb_cases
+      fi
 
       reset_testing_host ${app_name}
 
@@ -38,6 +38,7 @@ def call(String token, String app_name, String etPod, String casesTags ){
       echo "---> Write the cucumber testing script ..."
       echo "ET_POD=${pod_name} RUN_ON_PSI=1 ${cucumber_cmd} ${cases_tags} ${cucumber_report}" > cucumber_report.sh
       chmod +x cucumber_report.sh
+      ./cucumber_reprot.sh
       '''
     } //project
   } //cluster
