@@ -1,9 +1,9 @@
-def call(String token, String app_name, String etPod, String casesTags){
+def call(String token, String app_name, String etPod, String casesFeatures){
   openshift.withCluster('https://paas.psi.redhat.com', token) {
     openshift.withProject('errata-qe-test'){
     sh "echo ${app_name} > app_name"
     sh "echo ${etPod} > et_pod"
-    sh "echo ${casesTags} > cases_tags"
+    sh "echo ${casesFeatures} > cases_features"
 
     sh '''
       reset_testing_host(){
@@ -20,9 +20,9 @@ def call(String token, String app_name, String etPod, String casesTags){
 
       pod_name=$(cat et_pod)
       app_name=$(cat app_name)
-      cases_tags=$(cat cases_tags)
+      cases_features=$(cat cases_features)
 
-      if [[ ${cases_tags} =~ "@umb" ]] && [[ ! ${cases_tags} =~ "~@umb" ]]
+      if [[ ${cases_features} =~ "UMB" ]]
       then
         specify_runner_umb_for_cucumber_umb_cases
       fi
@@ -37,13 +37,17 @@ def call(String token, String app_name, String etPod, String casesTags){
       cucumber_report="--format json_pretty --strict -o cucumber-report-${app_name}.json"
       features_dir="features/remote"
       rerun_report="-f pretty -f rerun --out rerun.txt"
-      rerun_cmd="@rerun.txt"
+      rerun_cmd="@rerun.txt --format json_pretty --strict -o rerun.json"
       echo "---> Write the cucumber testing script ..."
-      echo "${cucumber_cmd} ${cases_tags} ${cucumber_report} ${rerun_report} ${features_dir} || ${cucumber_cmd} ${rerun_cmd}" > cucumber_report.sh
+      echo "${cucumber_cmd} ${cases_features} ${cucumber_report} ${rerun_report} ${features_dir} || ${cucumber_cmd} ${rerun_cmd}" > cucumber_report.sh
       chmod +x cucumber_report.sh
       ./cucumber_report.sh
+      # after the rerun, let us use the paraser to merge the rerun.json and cucumber-report.json
+      cp /tmp/TS2_db/parser_rerun.py .
+      python parser_rerun.py cucumber-report-${app_name}.json | python -m json.tool > cucumber-report-${app_name}.json_new
+      mv cucumber-report-${app_name}.json cucumber-report-${app_name}.json_old
+      mv cucumber-report-${app_name}.json_new cucumber-report-${app_name}.json      
       '''
     } //project
   } //cluster
-
 }
