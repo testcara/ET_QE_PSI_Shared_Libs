@@ -1,7 +1,7 @@
 def call(String token, String appName, String templateNameofET, String templateNameofMysql, 
 	String etTemplateParameters, String mysqlTemplateParameters,
 	String templatePathofET, String templatePathofMysql,
-	String qeTesting, String casesTags){
+	String qeTesting, String casesTags, String parallel){
 
 	def RUN_USER = '1058980001'
 	def MSYQL_USER = "root"
@@ -30,30 +30,30 @@ def call(String token, String appName, String templateNameofET, String templateN
 	    node(runner) {
 	        stage('clean apps') {
 	            container('qe-testing-runner'){
-	            	sleep(new Random().nextInt(10))
 	                [appName, "${appName}-mysql"].each {
 	                    clean_up(token, it, 'app')
 	                } //each
-	                /* not clean up template here
-	                [templateNameofET, templateNameofMysql].each {
-	                    clean_up(token, it, 'template')
-	                }
-	                */
 	            } //container
 	        } //stage
-
-	        /*
-	        stage('upload templates') {
-	            container('qe-testing-runner'){
-	                upload_templates(token, templatePathofET, templatePathofMysql)
-	            }
-	        }*/
+	        if(parallel=="false"){
+	        	stage('parepare templates'){
+	        		container('qe-testing-runner'){
+	        			[templateNameofET, templateNameofMysql].each {
+		                    clean_up(token, it, 'template')
+		                } //each
+		                upload_templates(token, templatePathofET, templatePathofMysql)
+		            } //container
+	        	} //stage
+	        } //if
 
 	        stage('create mysql app'){
 	            container('qe-testing-runner'){
 	            	echo "app-name:${appName}-mysql "
-
-	                create_apps_oc(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
+	            	if(parallel=="true"){
+	            		create_apps_by_oc(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
+	            	} else{
+	            		create_apps(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
+	            	}
 	            }
 	        }
 	        stage('create et app'){
