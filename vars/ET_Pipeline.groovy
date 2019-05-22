@@ -28,7 +28,7 @@ def call(String token, String appName, String templateNameofET, String templateN
     ]) 
 	{ 
 	    node(runner) {
-	        stage('clean apps and templates') {
+	        stage('clean apps') {
 	            container('qe-testing-runner'){
 	                [appName, "${appName}-mysql"].each {
 	                    clean_up(token, it, 'app')
@@ -40,12 +40,14 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                */
 	            } //container
 	        } //stage
-
+	        
+	        /*
 	        stage('upload templates') {
 	            container('qe-testing-runner'){
 	                upload_templates(token, templatePathofET, templatePathofMysql)
 	            }
-	        }
+	        }*/
+
 	        stage('create mysql app'){
 	            container('qe-testing-runner'){
 	                create_apps(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
