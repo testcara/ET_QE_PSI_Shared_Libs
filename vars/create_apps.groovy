@@ -1,6 +1,7 @@
-def call(String token, String name, String template, String parameters){
+def call(String token, String name, String template, String templateParameters){
     openshift.withCluster('https://paas.psi.redhat.com', token) {
 	    openshift.withProject('errata-qe-test'){
+	    	def parameters = "-p=APP_NAME=${name} ${templateParameters}"
 			echo "--- Create app $name from the $template --->"
 			echo "--- With parameters: $parameters ...>"
 			def objectsName
@@ -11,7 +12,7 @@ def call(String token, String name, String template, String parameters){
 			}
 
 		    def templateGeneratedSelector = openshift.selector(objectsName)
-		    def objectModels = openshift.process(template, parameters)
+		    def objectModels = openshift.process(template, templateParameters)
 		    def objects
 		    def verb
 		    def objectsGeneratedFromTemplate = templateGeneratedSelector.exists()
