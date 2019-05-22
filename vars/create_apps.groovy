@@ -12,7 +12,7 @@ def call(String token, String name, String template, String templateParameters){
 			}
 			echo "---> the following objects will be created:"
 			echo objectsName.toString()
-			sleep(3600)
+
 
 		    def templateGeneratedSelector = openshift.selector(objectsName)
 		    def objectModels = openshift.process(template, parameters)
@@ -29,6 +29,7 @@ def call(String token, String name, String template, String templateParameters){
 		    objects.withEach {
 		        echo "${verb} ${it.name()} from template with labels ${it.object().metadata.labels}"
 		    }
+		    sleep(3600)
 		    return objects
 		} //project
 	} //cluster
