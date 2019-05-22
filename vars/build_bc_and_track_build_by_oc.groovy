@@ -11,7 +11,7 @@ def call(String token, Integer time, String bcName){
             do
                 sleep 30 # 30 seconds
                 status=$(oc get build | grep ${bcName} | awk "{print $4}")
-                if [[ ${status} == "Complete" ]]
+                if [[ ${status} =~ "Complete" ]]
                 then
                   echo "---> Build complete ..."
                   exit 0

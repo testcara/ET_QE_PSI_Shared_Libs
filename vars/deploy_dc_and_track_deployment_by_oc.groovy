@@ -11,7 +11,7 @@ def call(String token, Integer time, String dcName ){
             do
                 sleep 10 # 10 seconds
                 status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
-                if [[ ${status} == "Running" ]]
+                if [[ ${status} =~ "Running" ]]
                 then
                   echo "---> Deployment complete ..."
                   exit 0
