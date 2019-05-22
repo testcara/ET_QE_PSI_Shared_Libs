@@ -58,7 +58,11 @@ def call(String token, String appName, String templateNameofET, String templateN
 	        }
 	        stage('create et app'){
 	            container('qe-testing-runner'){
-	                create_apps_oc(token, appName, templateNameofET, etTemplateParameters)
+	            	if(parallel=="true"){
+	                	create_apps_by_oc(token, appName, templateNameofET, etTemplateParameters)
+	                } else{
+	                	create_apps(token, appName, templateNameofET, etTemplateParameters)
+	                }
 	            }
 	        }
 	        stage('build mysql app'){
