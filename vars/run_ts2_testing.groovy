@@ -22,7 +22,7 @@ def call(String token, String app_name, String etPod, String casesTags){
       app_name=$(cat app_name)
       cases_tags=$(cat cases_tags)
 
-      if [[ "${cases_tags}" =~ '@umb' ]]
+      if [[ ${cases_tag_1} =~ "@umb" ]] && [[ ! ${cases_tag_1} =~ "~@umb" ]]
       then
         specify_runner_umb_for_cucumber_umb_cases
       fi
