@@ -40,7 +40,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                */
 	            } //container
 	        } //stage
-	        
+
 	        /*
 	        stage('upload templates') {
 	            container('qe-testing-runner'){
@@ -50,6 +50,8 @@ def call(String token, String appName, String templateNameofET, String templateN
 
 	        stage('create mysql app'){
 	            container('qe-testing-runner'){
+	            	echo "app-name:${appName}-mysql "
+
 	                create_apps(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
 	            }
 	        }

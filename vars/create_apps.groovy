@@ -1,6 +1,7 @@
 def call(String token, String name, String template, String parameters){
     openshift.withCluster('https://paas.psi.redhat.com', token) {
 	    openshift.withProject('errata-qe-test'){
+	    	echo "here--- $name"
 			echo '--- Create app ${name} from the ${template} --->'
 			def objectsName
 			if(name.toLowerCase().contains('mysql')){
