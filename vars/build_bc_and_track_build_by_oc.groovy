@@ -7,6 +7,7 @@ def call(String token, Integer time, String bcName){
             def bcSelector = openshift.selector("bc", bcName)
             def builds= bcSelector.related('builds')
             timeout(time) {
+                sleep(10)
                 // Checking watch output and running watch closure again in 250ms
                 builds.untilEach(1) {
                     def status = it.object().status.phase
