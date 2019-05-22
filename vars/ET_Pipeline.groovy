@@ -30,6 +30,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 	    node(runner) {
 	        stage('clean apps') {
 	            container('qe-testing-runner'){
+	            	sleep(new Random().nextInt(10))
 	                [appName, "${appName}-mysql"].each {
 	                    clean_up(token, it, 'app')
 	                } //each
