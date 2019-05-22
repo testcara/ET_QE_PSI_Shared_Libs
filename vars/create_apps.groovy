@@ -1,16 +1,16 @@
-def call(String token, String app_name, String templateName, String templateParameters){
+def call(String token, String name, String template, String parameters){
     openshift.withCluster('https://paas.psi.redhat.com', token) {
 	    openshift.withProject('errata-qe-test'){
-			echo '--- Create app ${app_name} from the ${templateName} --->'
+			echo '--- Create app ${name} from the ${template} --->'
 			def objectsName
-			if(app_name.toLowerCase().contains('mysql')){
-				objectsName = (String[]) ["is/${app_name}", "bc/${app_name}", "dc/${app_name}", "svc/${app_name}"]
+			if(name.toLowerCase().contains('mysql')){
+				objectsName = (String[]) ["is/${name}", "bc/${name}", "dc/${name}", "svc/${name}"]
 			} else{
-				objectsName = (String[]) ["is/${app_name}-s2i", "is/${app_name}-basic", "bc/${app_name}-bc", "dc/${app_name}-rails", "route/${app_name}-route", "svc/${app_name}-svc"]
+				objectsName = (String[]) ["is/${name}-s2i", "is/${name}-basic", "bc/${name}-bc", "dc/${name}-rails", "route/${name}-route", "svc/${name}-svc"]
 			}
 
 		    def templateGeneratedSelector = openshift.selector(objectsName)
-		    def objectModels = openshift.process(templateName, templateParameters)
+		    def objectModels = openshift.process(template, parameters)
 		    def objects
 		    def verb
 		    def objectsGeneratedFromTemplate = templateGeneratedSelector.exists()
