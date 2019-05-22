@@ -53,12 +53,12 @@ def call(String token, String appName, String templateNameofET, String templateN
 	            container('qe-testing-runner'){
 	            	echo "app-name:${appName}-mysql "
 
-	                create_apps(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
+	                create_apps_oc(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
 	            }
 	        }
 	        stage('create et app'){
 	            container('qe-testing-runner'){
-	                create_apps(token, appName, templateNameofET, etTemplateParameters)
+	                create_apps_oc(token, appName, templateNameofET, etTemplateParameters)
 	            }
 	        }
 	        stage('build mysql app'){
