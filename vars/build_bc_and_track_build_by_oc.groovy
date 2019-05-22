@@ -9,7 +9,7 @@ def call(String token, Integer time, String bcName){
             # let us wait 30 mins
             for i in {1..60}
             do
-                sleep(30) # 30 seconds
+                sleep 30 # 30 seconds
                 status=$(oc get build | grep ${bcName} | awk "{print $4}")
                 if [[ ${status} == "Complete" ]]
                 then

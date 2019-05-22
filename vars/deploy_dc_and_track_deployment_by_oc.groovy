@@ -9,7 +9,7 @@ def call(String token, Integer time, String dcName ){
             # let us wait 5 mins
             for i in {1..30}
             do
-                sleep(10) # 10 seconds
+                sleep 10 # 10 seconds
                 status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
                 if [[ ${status} == "Running" ]]
                 then
