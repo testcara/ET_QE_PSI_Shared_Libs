@@ -29,6 +29,7 @@ def call(String token, Integer time, String dcName ){
 		    def dcSelector = openshift.selector("dc", dcName)
 
 		    timeout(time) { 
+		    	sleep(10)
 		        openshift.selector("dc", dcName).related('pods').untilEach(1) {
 		            if (it.object().status.phase == "Running" )
 		            {
