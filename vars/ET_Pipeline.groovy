@@ -95,10 +95,10 @@ def call(String token, String appName, String templateNameofET, String templateN
 	            try { 
 	                stage('TS2 testing preparation'){
 	                    container('qe-testing-runner'){
-	                        
-	                        def mysqlPod = get_pod_name_for_dc(token, "${appName}-mysql")
+
+	                        def mysqlPod = sh "oc get pods | grep ${appName}-mysql | grep -v build | cut -d ' ' -f 1"
 	                        echo "Got mysqlPod: ${mysqlPod}"
-	                        def etPod = get_pod_name_for_dc(token, "${appName}-rails")
+	                        def etPod = sh "oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
 	                        echo "Got etPod: ${etPod}"
 	                        import_sql_files_to_db(token, mysqlPod, DB_FILE, MSYQL_USER, MYSQL_PASSWORD)
 	                        def db_migration_cmd = "bundle exec rake db:migrate"
@@ -128,7 +128,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                            url: 'https://code.engineering.redhat.com/gerrit/errata-rails'
 	                        */
 
-	                        def etPod = get_pod_name_for_dc(token, "${appName}-rails")
+	                        def etPod = sh "oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
 	                        run_ts2_testing(token, appName, etPod, casesTags)
 	                    }
 	                } //stage
