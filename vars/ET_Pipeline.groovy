@@ -3,6 +3,8 @@ def call(String token, String appName, String templateNameofET, String templateN
 	String templatePathofET, String templatePathofMysql,
 	String qeTesting, String casesTags, String parallel){
 
+	echo "---> Now, you are using the ET pipeline shared lib ..."
+
 	def RUN_USER = '1058980001'
 	def MSYQL_USER = "root"
 	def MYSQL_PASSWORD = "arNdk123_"
