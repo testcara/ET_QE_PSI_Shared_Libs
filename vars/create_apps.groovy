@@ -10,9 +10,11 @@ def call(String token, String name, String template, String templateParameters){
 			} else{
 				objectsName = (String[]) ["is/${name}-s2i", "is/${name}-basic", "bc/${name}-bc", "dc/${name}-rails", "route/${name}-route", "svc/${name}-svc"]
 			}
+			echo "---> the following objects will be created:"
+			echo objectsName.toString()
 
 		    def templateGeneratedSelector = openshift.selector(objectsName)
-		    def objectModels = openshift.process(template, templateParameters)
+		    def objectModels = openshift.process(template, parameters)
 		    def objects
 		    def verb
 		    def objectsGeneratedFromTemplate = templateGeneratedSelector.exists()
