@@ -73,22 +73,22 @@ def call(String token, String appName, String templateNameofET, String templateN
 	        }
 	        stage('build mysql app'){
 	            container('qe-testing-runner'){
-	                build_bc_and_track_build(token, 20, "${appName}-mysql")
+	                build_bc_and_track_build_by_oc(token, 20, "${appName}-mysql")
 	            }
 	        }
 	        stage('deploy mysql app'){
 	            container('qe-testing-runner'){
-	                deploy_dc_and_track_deployment(token, 5, "${appName}-mysql")
+	                deploy_dc_and_track_deployment_by_oc(token, 5, "${appName}-mysql")
 	            }
 	        }
 	        stage('build et app'){
 	            container('qe-testing-runner'){
-	                build_bc_and_track_build(token, 20, "${appName}-bc")
+	                build_bc_and_track_build_by_oc(token, 20, "${appName}-bc")
 	            }
 	        }
 	        stage('deploy et app'){
 	            container('qe-testing-runner'){
-	                deploy_dc_and_track_deployment(token, 5, "${appName}-rails")
+	                deploy_dc_and_track_deployment_by_oc(token, 5, "${appName}-rails")
 	            }
 	        }
 	        if(qeTesting=='true'){
@@ -96,8 +96,8 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                stage('TS2 testing preparation'){
 	                    container('qe-testing-runner'){
 	                        
-	                        def mysqlPod = get_pod_name_for_dc(token, "${appName}-mysql")
-	                        def etPod = get_pod_name_for_dc(token, "${appName}-rails")
+	                        def mysqlPod = get_pod_name_for_dc_by_oc(token, "${appName}-mysql")
+	                        def etPod = get_pod_name_for_dc_by_oc(token, "${appName}-rails")
 
 	                        import_sql_files_to_db(token, mysqlPod, DB_FILE, MSYQL_USER, MYSQL_PASSWORD)
 	                        def db_migration_cmd = "bundle exec rake db:migrate"
@@ -127,7 +127,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                            url: 'https://code.engineering.redhat.com/gerrit/errata-rails'
 	                        */
 
-	                        def etPod = get_pod_name_for_dc(token, "${appName}-rails")
+	                        def etPod = get_pod_name_for_dc_by_oc(token, "${appName}-rails")
 	                        run_ts2_testing(token, appName, etPod, casesTags)
 	                    }
 	                } //stage
