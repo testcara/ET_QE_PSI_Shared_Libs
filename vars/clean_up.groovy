@@ -10,6 +10,7 @@ def call(String token, String name, String type){
                 case 'template':
                 echo "---> Clean template: $name ..."
                 if(openshift.selector("template", "$name").exists()){
+                    echo "---> Found the template: ${name}, deleting ..."
                     openshift.selector("template", "$name").delete()
                 }
                 break
