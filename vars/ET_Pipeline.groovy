@@ -33,7 +33,11 @@ def call(String token, String appName, String templateNameofET, String templateN
 	        stage('clean apps') {
 	            container('qe-testing-runner'){
 	                [appName, "${appName}-mysql"].each {
-	                    clean_up(token, it, 'app')
+	                	if(parallel=="true"){
+	                		clean_up_by_oc(token, it, 'app')
+	                	} else{
+	                    	clean_up(token, it, 'app')
+	                	} //if
 	                } //each
 	            } //container
 	        } //stage
