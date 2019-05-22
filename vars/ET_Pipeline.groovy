@@ -33,9 +33,11 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                [appName, "${appName}-mysql"].each {
 	                    clean_up(token, it, 'app')
 	                } //each
+	                /* not clean up template here
 	                [templateNameofET, templateNameofMysql].each {
 	                    clean_up(token, it, 'template')
 	                }
+	                */
 	            } //container
 	        } //stage
 
