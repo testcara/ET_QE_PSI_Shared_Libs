@@ -3,7 +3,7 @@ def call(String token, String app_name, String etPod, String casesFeatures){
     openshift.withProject('errata-qe-test'){
     sh "echo ${app_name} > app_name"
     sh "echo ${etPod} > et_pod"
-    sh "echo ${casesFeatures} > cases_features"
+    sh "echo \"${casesFeatures}\" > cases_features"
 
     sh '''
       reset_testing_host(){
