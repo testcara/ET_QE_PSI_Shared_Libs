@@ -110,7 +110,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 
 	                        disable_sending_qpid_message(token, etPod)
 
-	                        if(casesTags.contains(',@umb')){
+	                        if(casesTags.contains('UMB')){
 	                            specify_cucumber_umb_broker(token, etPod)
 	                        }
 

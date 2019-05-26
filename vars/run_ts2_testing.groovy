@@ -41,7 +41,7 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       echo "---> Write the cucumber testing script ..."
       echo "${cucumber_cmd} ${cases_features} ${cucumber_report} ${rerun_report} ${features_dir} || ${cucumber_cmd} ${rerun_cmd}" > cucumber_report.sh
       chmod +x cucumber_report.sh
-      ./cucumber_report.sh
+      ./cucumber_report.sh || true
       # after the rerun, let us use the paraser to merge the rerun.json and cucumber-report.json
       cp /tmp/TS2_db/parser_rerun.py .
       python parser_rerun.py cucumber-report-${app_name}.json | python -m json.tool > cucumber-report-${app_name}.json_new
