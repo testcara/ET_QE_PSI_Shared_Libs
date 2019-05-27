@@ -43,10 +43,10 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       chmod +x cucumber_report.sh
       ./cucumber_report.sh || true
       # after the rerun, let us use the paraser to merge the rerun.json and cucumber-report.json
-      cp /tmp/TS2_db/parser_rerun.py .
-      python parser_rerun.py cucumber-report-${app_name}.json | python -m json.tool > cucumber-report-${app_name}.json_new
+      cp /tmp/TS2_db/cucumber_rerun_parser.py .
+      python cucumber_rerun_parser.py --rerun-report=rerun.json --origin-report=cucumber-report-${app_name}.json --new-report=${app_name}-new-report.json
       rm -rf cucumber-report-${app_name}.json rerun.json
-      mv cucumber-report-${app_name}.json_new cucumber-report-${app_name}.json      
+      mv ${app_name}-new-report.json cucumber-report-${app_name}.json
       '''
     } //project
   } //cluster
