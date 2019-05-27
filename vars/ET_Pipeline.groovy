@@ -1,4 +1,4 @@
-def call(String token, String appName, String templateNameofET, String templateNameofMysql, 
+def call(String token, String appName, String templateNameofET, String templateNameofMysql,
 	String etTemplateParameters, String mysqlTemplateParameters,
 	String templatePathofET, String templatePathofMysql,
 	String qeTesting, String casesTags, String parallel){
@@ -10,25 +10,25 @@ def call(String token, String appName, String templateNameofET, String templateN
 	def MYSQL_PASSWORD = "arNdk123_"
 	def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
 	def runner= "mypod-${UUID.randomUUID().toString()}"
-	podTemplate(label: runner, 
+	podTemplate(label: runner,
     containers: [
     containerTemplate(
-        name: 'qe-testing-runner', 
+        name: 'qe-testing-runner',
         image: 'docker-registry.upshift.redhat.com/errata-qe-test/qe_testing_upshift_runner:latest',
-        command: 'cat', 
+        alwaysPullImage: true,
+        command: 'cat',
         ttyEnabled: true,
-        
         envVars: [
             envVar(key: 'GIT_SSL_NO_VERIFY', value: 'true')
         ]
-        
+
         )],
     volumes: [
     persistentVolumeClaim(
         claimName: 'et-qe-testing-mysql',
         mountPath: '/tmp/TS2_db/')
-    ]) 
-	{ 
+    ])
+	{
 	    node(runner) {
 	        stage('clean apps') {
 	            container('qe-testing-runner'){
@@ -92,10 +92,10 @@ def call(String token, String appName, String templateNameofET, String templateN
 	            }
 	        }
 	        if(qeTesting=='true'){
-	            try { 
+	            try {
 	                stage('TS2 testing preparation'){
 	                    container('qe-testing-runner'){
-	                    	       
+
 	                    	def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | cut -d ' ' -f 1"
 	                        def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
 	                        echo "Got mysqlPod: ${mysqlPod}"
@@ -117,7 +117,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                        restart_et_service(token, etPod)
 
 	                    }
-	                }             
+	                }
 	                stage('run TS2 testing'){
 	                    container('qe-testing-runner'){
 	                        sh '''
@@ -127,7 +127,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 	                        '''
 	                        /*
 	                        The following code does not work for the ssl error.
-	                        
+
 	                        git branch: 'develop',
 	                            url: 'https://code.engineering.redhat.com/gerrit/errata-rails'
 	                        */
