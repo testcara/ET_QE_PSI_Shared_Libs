@@ -45,7 +45,7 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       # after the rerun, let us use the paraser to merge the rerun.json and cucumber-report.json
       cp /tmp/TS2_db/parser_rerun.py .
       python parser_rerun.py cucumber-report-${app_name}.json | python -m json.tool > cucumber-report-${app_name}.json_new
-      mv cucumber-report-${app_name}.json cucumber-report-${app_name}.json_old
+      rm -rf cucumber-report-${app_name}.json rerun.json
       mv cucumber-report-${app_name}.json_new cucumber-report-${app_name}.json      
       '''
     } //project
