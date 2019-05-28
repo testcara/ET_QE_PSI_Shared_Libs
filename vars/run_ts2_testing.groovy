@@ -57,7 +57,7 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       	rm -rf cucumber-report-${app_name}.json rerun.json
       	mv ${app_name}-new-report.json cucumber-report-${app_name}.json
       else
-      	echo "No new report json, we would keep the origin reports"
+      	echo "No new report json, we would keep the origin reports!"
       fi
       '''
     } //project
