@@ -9,6 +9,6 @@ def call(String token, String etPod){
     run_cmd_against_pod(token, etPod, change_umb_cmd_2)
   }
   def umb_handler = "/opt/app-root/src/lib/message_bus/handler.rb"
-  def delay_to_send_message_cmd="sed -i \"/messenger.send/i \        sleep 5\" ${umb_handler}"
+  def delay_to_send_message_cmd="sed -i \"/messenger.send/i \\        sleep 5\" ${umb_handler}"
   run_cmd_against_pod(token, etPod, delay_to_send_message_cmd)
 }
