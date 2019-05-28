@@ -43,10 +43,22 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       chmod +x cucumber_report.sh
       ./cucumber_report.sh || true
       # after the rerun, let us use the paraser to merge the rerun.json and cucumber-report.json
-      cp /tmp/TS2_db/cucumber_rerun_parser.py .
-      python3 cucumber_rerun_parser.py --rerun-report=rerun.json --origin-report=cucumber-report-${app_name}.json --new-report=${app_name}-new-report.json
-      rm -rf cucumber-report-${app_name}.json rerun.json
-      mv ${app_name}-new-report.json cucumber-report-${app_name}.json
+      if [[ $(find . -name "*rerun*.json") =~ "rerun" ]]
+      then
+      	echo "Have got the rerun json and call the rerun parser now!"
+      	cp /tmp/TS2_db/cucumber_rerun_parser.py .
+      	python3 cucumber_rerun_parser.py --rerun-report=rerun.json --origin-report=cucumber-report-${app_name}.json --new-report=${app_name}-new-report.json
+      else
+      	echo "No rerun json, we would not call the rerun parser!"
+      fi
+      if [[ $(find . -name "*new-report*.json") =~ "new-report" ]]
+      then
+      	echo "Have got the new report and delete the obsolete one now!"
+      	rm -rf cucumber-report-${app_name}.json rerun.json
+      	mv ${app_name}-new-report.json cucumber-report-${app_name}.json
+      else
+      	echo "No new report json, we would keep the origin reports"
+      fi
       '''
     } //project
   } //cluster
