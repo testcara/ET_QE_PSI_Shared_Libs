@@ -90,15 +90,16 @@ def call(String api_username, String api_token) {
     }
 
 
-
     body = body + """
-<pre>
-$failed_scenarios_report
-</pre>
-<pre>
-$pending_scenarios_report
-</pre>
-"""
+    </br>
+    <pre>
+    $failed_scenarios_report
+    </pre>
+    </br>
+    <pre>
+    $pending_scenarios_report
+    </pre>
+    """
 
     String subject = " $currentResult: $env.JOB_NAME#$env.BUILD_NUMBER for Commit $latestCommitShort"
     if (to != null && !to.isEmpty()) {
