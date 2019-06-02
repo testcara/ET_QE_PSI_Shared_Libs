@@ -33,59 +33,60 @@ def call(String api_username, String api_token) {
     
     sh "grep -b12 \'<tfoot\' cucumber_report.html | tail -n1 | cut -d \'>\' -f 2 | cut -d \'<\' -f 1 > total_scenarios_num"
 
-    String failed_scenarios_report = sh returnStdout: true, script: '''
+    String general_report = sh returnStdout: true, script: '''
+    get_blame_file(){
+        # failed_scenarios or disable_scenarios are needed as the parameter
+        rm -rf blame_file
+        cat $1 | while read line
+        do
+        grep -r "$line" features/remote/scenarios/ | head -n1 | awk -F\':\' \'{print $1}\' | xargs -i git blame "{}"  >> blame_file
+        done
+    }
+    get_owner_and_scenarios_map(){
+        # failed_scenarios or disable_scenarios are needed as the parameter
+        cat $1 | while read line; do grep "$line" blame_file|head -n1 ; done  > blame_owners
+        cat blame_owners | cut -d "(" -f 2   | cut -d " " -f 1 > owner
+        cat owner | sed -e "i<tr><td>" | sed -n "{N;s/\\n//p}" > format_owner
+        cat $1  | sed -e "i</td><td>" | sed -n "{N;s/\\n//p}" | sed -e "a</td></tr>" | sed -n "{N;s/\\n//p}" > format_scenarios
+        paste format_owner format_scenarios > owner_scenarios
+    }
+
     total_scenarios_num=$(cat total_scenarios_num)
+    # Get the failure report
     cat cucumber_failure_report.html | grep -b1 Scenario  | grep -v "brief" | awk \'{$1=""; print $0}\' | cut -d ">" -f 2- | cut -d "<" -f 1 | sed "/^$/d"| sed -n "{N;s/\\n/: /p}" | sort -u > failed_scenarios
-    rm -rf blame_file
-    cat failed_scenarios | while read line
-    do
-    grep -r "$line" features/remote/scenarios/ | head -n1 | awk -F\':\' \'{print $1}\' | xargs -i git blame "{}"  >> blame_file
-    done
-    cat failed_scenarios | while read line; do grep "$line" blame_file|head -n1 ; done  > blame_owners
-    cat blame_owners | cut -d "(" -f 2   | cut -d " " -f 1 > owner
-    cat owner | sed -e "i<tr><td>" | sed -n "{N;s/\\n//p}" > format_owner
-    cat failed_scenarios  | sed -e "i</td><td>" | sed -n "{N;s/\\n//p}" | sed -e "a</td></tr>" | sed -n "{N;s/\\n//p}" > format_scenarios
-    paste format_owner format_scenarios > owner_scenarios
+    get_blame_file failed_scenarios
+    get_owner_and_scenarios_map failed_scenarios
     questionable_cases_num=$(cat owner_scenarios | wc -l)
 
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "<p style=\'font-family:arial; LINE-HEIGHT:0px\'>No failures, cheers!</p>" >> owner_scenarios
+    echo "<p style=\'font-family:arial; line-height:0px;\'>No failures, cheers!</p>" >> owner_scenarios
     fi
 
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
-    sed -i "1 i <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</h3>" owner_scenarios
-    sed -i "/^$/ d" owner_scenarios
-    cat owner_scenarios
-    '''
-
-    String pending_scenarios_report = sh returnStdout: true, script: '''
-    total_scenarios_num=$(cat total_scenarios_num)
+    sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</p>" owner_scenarios
+    failed_scenarios_report=$(cat owner_scenarios)
+    # Get the pending report
     grep -r -b1 "@disable" features/remote/scenarios/ | grep "Scenario" | awk \'{$1=""; print $0}\' |  sed -e "s/^[ \\t]*//"  | sort -u > disable_scenarios
     questionable_cases_num=$(cat disable_scenarios | wc -l)
-    cat disable_scenarios | while read line
-    do
-    grep -r "$line" features/remote/scenarios/ | head -n1 | awk -F\':\' \'{print $1}\' | xargs -i git blame "{}"  >> blame_file  
-    done
-    cat disable_scenarios | while read line; do grep "$line" blame_file|head -n1 ; done  > blame_owners
-    cat blame_owners | cut -d "(" -f 2   | cut -d " " -f 1 > owner
-    cat owner | sed -e "i<tr><td>" | sed -n "{N;s/\\n//p}" > format_owner
-    cat disable_scenarios  | sed -e "i</td><td>" | sed -n "{N;s/\\n//p}" | sed -e "a</td></tr>" | sed -n "{N;s/\\n//p}" > format_scenarios
+    get_blame_file disable_scenarios
+    get_owner_and_scenarios_map disable_scenarios
     
-    paste format_owner format_scenarios > owner_scenarios
     questionable_cases_num=$(cat owner_scenarios | wc -l)
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "<p style=\'font-family:arial; LINE-HEIGHT:0px\'>No pending/disabled scenarios, cheers!</p>" >> owner_scenarios
+    echo "<p style=\'font-family:arial\'>No pending/disabled scenarios, cheers!</p>" >> owner_scenarios
     fi
 
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
-    sed -i "1 i  <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</h3>" owner_scenarios
-    sed -i "/^$/ d" owner_scenarios
-    cat owner_scenarios
+    sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</p>" owner_scenarios
+    disable_scenarios_report=$(cat owner_scenarios)
+
+    report="<pre>${failed_scenarios_report}${disable_scenarios_report}</pre>"
+    echo ${report}
     '''
 
-    if ("$failed_scenarios_report" =~ "No failures, cheers!"){
+    if ("$general_report" =~ "No failures, cheers!"){
         currentResult = 'SUCCESS'
     }
     else {
@@ -93,15 +94,7 @@ def call(String api_username, String api_token) {
     }
 
 
-    body = body + """
-    </br style = \"LINE-HEIGHT:0px\">
-    <pre>
-    $failed_scenarios_report
-    </pre>
-    <pre>
-    $pending_scenarios_report
-    </pre>
-    """
+    body = body + general_report
 
     String subject = " $currentResult: $env.JOB_NAME#$env.BUILD_NUMBER for Commit $latestCommitShort"
     if (to != null && !to.isEmpty()) {
