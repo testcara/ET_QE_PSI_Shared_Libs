@@ -24,7 +24,7 @@ def call(String api_username, String api_token) {
     <p style='font-family:arial'>
     <p>Latest Commit: "$latestCommit"</p>
     <p>Build Trigger: $cause</p>
-    <p>For more details, please reach the <a href="$env.BUILD_URL">build Log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
+    <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
     </p>
     """
 
