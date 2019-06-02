@@ -50,13 +50,14 @@ def call(String api_username, String api_token) {
 
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "None"
-    else
+    echo "No failures, cheers!" >> owner_scenarios
+    fi
+
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
     sed -i "1 i <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</h3>" owner_scenarios
     cat owner_scenarios
-    fi 
     '''
+
     String pending_scenarios_report = sh returnStdout: true, script: '''
     total_scenarios_num=$(cat total_scenarios_num)
     grep -r -b1 "@disable" features/remote/scenarios/ | grep "Scenario" | awk \'{$1=""; print $0}\' |  sed -e "s/^[ \\t]*//"  | sort -u > disable_scenarios
@@ -74,13 +75,13 @@ def call(String api_username, String api_token) {
     questionable_cases_num=$(cat owner_scenarios | wc -l)
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "No failures, cheers!" >> owner_scenarios
-    if
+    echo "No pending/disabled scenarios, cheers!" >> owner_scenarios
+    fi
 
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
     sed -i "1 i  <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</h3>" owner_scenarios
     cat owner_scenarios
-    ''' 
+    '''
 
     if ("$failed_scenarios_report" =~ "No failures, cheers!"){
         currentResult = 'SUCCESS'
