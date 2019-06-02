@@ -50,7 +50,7 @@ def call(String api_username, String api_token) {
 
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "No failures, cheers!" >> owner_scenarios
+    echo "<p style=\'font-family:arial; LINE-HEIGHT:0px\'>No failures, cheers!</p>" >> owner_scenarios
     fi
 
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
@@ -75,7 +75,7 @@ def call(String api_username, String api_token) {
     questionable_cases_num=$(cat owner_scenarios | wc -l)
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "No pending/disabled scenarios, cheers!" >> owner_scenarios
+    echo "<p style=\'font-family:arial; LINE-HEIGHT:0px\'>No pending/disabled scenarios, cheers!</p>" >> owner_scenarios
     fi
 
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
