@@ -74,15 +74,15 @@ def call(String api_username, String api_token) {
     questionable_cases_num=$(cat owner_scenarios | wc -l)
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "None"
-    else
+    echo "No failures, cheers!" >> owner_scenarios
+    if
+
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
     sed -i "1 i  <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</h3>" owner_scenarios
     cat owner_scenarios
-    fi 
     ''' 
 
-    if ("$failed_scenarios_report" == "None"){
+    if ("$failed_scenarios_report" =~ "No failures, cheers!"){
         currentResult = 'SUCCESS'
     }
     else {
