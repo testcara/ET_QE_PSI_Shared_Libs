@@ -94,11 +94,10 @@ def call(String api_username, String api_token) {
 
 
     body = body + """
-    </br style = \"LINE-HEIGHT:2px\">
+    </br style = \"LINE-HEIGHT:0px\">
     <pre>
     $failed_scenarios_report
     </pre>
-    </br style = \"LINE-HEIGHT:2px\">
     <pre>
     $pending_scenarios_report
     </pre>
