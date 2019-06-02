@@ -55,6 +55,7 @@ def call(String api_username, String api_token) {
 
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
     sed -i "1 i <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</h3>" owner_scenarios
+    sed -i "/^$/ d" owner_scenarios
     cat owner_scenarios
     '''
 
@@ -80,6 +81,7 @@ def call(String api_username, String api_token) {
 
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
     sed -i "1 i  <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</h3>" owner_scenarios
+    sed -i "/^$/ d" owner_scenarios
     cat owner_scenarios
     '''
 
@@ -92,11 +94,11 @@ def call(String api_username, String api_token) {
 
 
     body = body + """
-    </br>
+    </br style = \"LINE-HEIGHT:2px\">
     <pre>
     $failed_scenarios_report
     </pre>
-    </br>
+    </br style = \"LINE-HEIGHT:2px\">
     <pre>
     $pending_scenarios_report
     </pre>
