@@ -54,7 +54,7 @@ def call(String api_username, String api_token) {
     echo "None"
     else
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
-    sed -i "1 i <b style=\'font-family:arial\'>Failures Percentage: ${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%</b>" owner_scenarios
+    sed -i "1 i <h3>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%):</h3>" owner_scenarios
     cat owner_scenarios
     fi 
     '''
@@ -78,7 +78,7 @@ def call(String api_username, String api_token) {
     echo "None"
     else
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
-    sed -i "1 i <b style=\'font-family:arial\'>Disabled Percentage: ${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%</b>" owner_scenarios
+    sed -i "1 i <h3>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%):</h3>" owner_scenarios
     cat owner_scenarios
     fi 
     ''' 
@@ -93,11 +93,9 @@ def call(String api_username, String api_token) {
 
 
     body = body + """
-<h2>Failed Scenarios: </h2>
 <pre>
 $failed_scenarios_report
 </pre>
-<h2>Disabled/Pending Scenarios: </h2>
 <pre>
 $pending_scenarios_report
 </pre>
