@@ -2,9 +2,10 @@ def call(String api_username, String api_token) {
     def to = emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                  [$class: 'DevelopersRecipientProvider'],
                                  [$class: 'RequesterRecipientProvider']])
-    String currentResult = currentBuild.result
+    String currentResult = ""
     String previousResult = currentBuild.getPreviousBuild().result
-    String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
+    String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
+    String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
 
     def causes = currentBuild.rawBuild.getCauses()
     // E.g. 'started by user', 'triggered by scm change'
@@ -22,9 +23,8 @@ def call(String api_username, String api_token) {
     String body = """
     <p>Latest Commit: "$latestCommit"</p>
     <p>Build Trigger: $cause</p>
-    <p>See: <a href="$env.BUILD_URL">$env.BUILD_URL</a></p>
-    <p>Cucumber Report:</p>
-    <p>See: <a href="$cucumber_report_url">$cucumber_report_url</a></p>
+    <p>Build Log: <a href="$env.BUILD_URL">$env.BUILD_URL</a></p>
+    <p>Cucumber Report: <a href="$cucumber_report_url">$cucumber_report_url</a></p>
     """
 
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_failure_url >  cucumber_failure_report.html"
@@ -102,7 +102,7 @@ $pending_scenarios_report
 </pre>
 """
 
-    String subject = "$env.BUILD_NUMBER for Commit $latestCommit: $currentResult"
+    String subject = " $currentResult: $env.BUILD_NUMBER for Commit $latestCommitShort"
     if (to != null && !to.isEmpty()) {
         // Email on any failures, and on first success.
         mail to: to, subject: subject, body: body, mimeType: "text/html"
