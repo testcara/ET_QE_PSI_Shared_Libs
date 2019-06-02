@@ -17,9 +17,9 @@ def call(String api_username, String api_token) {
     causes = null
 
 
-    String cucumber_report_url = "https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com/job/test_container_template/396/cucumber-html-reports/overview-features.html"
-    String cucumber_failure_url = "https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com/job/test_container_template/396/cucumber-html-reports/overview-failures.html"
-    //String cucumber_report_url = $env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
+    String cucumber_report_url = env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
+    String cucumber_failure_url = env.BUILD_URL + "cucumber-html-reports/overview-failures.html"
+
     String body = """
     <p style='font-family:arial'>
     <p>Latest Commit: "$latestCommit"</p>
