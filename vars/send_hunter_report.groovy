@@ -53,7 +53,7 @@ def call(String api_username, String api_token) {
     echo "None"
     else
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
-    sed -i "1 i <h2 style=\'font-family:arial; LINE-HEIGHT:3px\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</h2>" owner_scenarios
+    sed -i "1 i <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</h3>" owner_scenarios
     cat owner_scenarios
     fi 
     '''
@@ -77,7 +77,7 @@ def call(String api_username, String api_token) {
     echo "None"
     else
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
-    sed -i "1 i  <h2 style=\'font-family:arial; LINE-HEIGHT:3px\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</h2>" owner_scenarios
+    sed -i "1 i  <h3 style=\'font-family:arial; LINE-HEIGHT:0px\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</h3>" owner_scenarios
     cat owner_scenarios
     fi 
     ''' 
