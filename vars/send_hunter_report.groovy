@@ -21,10 +21,12 @@ def call(String api_username, String api_token) {
     String cucumber_failure_url = "https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com/job/test_container_template/396/cucumber-html-reports/overview-failures.html"
     //String cucumber_report_url = $env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
     String body = """
+    <p style='font-family:arial'>
     <p>Latest Commit: "$latestCommit"</p>
     <p>Build Trigger: $cause</p>
     <p>Build Log: <a href="$env.BUILD_URL">$env.BUILD_URL</a></p>
     <p>Cucumber Report: <a href="$cucumber_report_url">$cucumber_report_url</a></p>
+    </p>
     """
 
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_failure_url >  cucumber_failure_report.html"
