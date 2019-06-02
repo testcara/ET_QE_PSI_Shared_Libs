@@ -45,7 +45,6 @@ def call(String api_username, String api_token) {
     cat blame_owners | cut -d "(" -f 2   | cut -d " " -f 1 > owner
     cat owner | sed -e "i<tr><td>" | sed -n "{N;s/\\n//p}" > format_owner
     cat failed_scenarios  | sed -e "i</td><td>" | sed -n "{N;s/\\n//p}" | sed -e "a</td></tr>" | sed -n "{N;s/\\n//p}" > format_scenarios
-
     paste format_owner format_scenarios > owner_scenarios
     questionable_cases_num=$(cat owner_scenarios | wc -l)
 
@@ -54,6 +53,8 @@ def call(String api_username, String api_token) {
     echo "None"
     else
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
+    sed -i " $ i <table>" owner_scenarios
+    sed -i " $ i </table>" owner_scenarios
     sed -i "1 i <h3 style=\'font-family:arial\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</h3>" owner_scenarios
     cat owner_scenarios
     fi 
