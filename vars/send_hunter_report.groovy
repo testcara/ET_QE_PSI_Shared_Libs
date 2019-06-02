@@ -1,7 +1,5 @@
-def call(String api_username, String api_token) {
-    def to = emailextrecipients([[$class: 'CulpritsRecipientProvider'],
-                                 [$class: 'DevelopersRecipientProvider'],
-                                 [$class: 'RequesterRecipientProvider']])
+def call(String api_username, String api_token, String mail_to) {
+    String to = mail_to
     String currentResult = ""
     String previousResult = currentBuild.getPreviousBuild().result
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
@@ -66,6 +64,7 @@ def call(String api_username, String api_token) {
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
     sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</p>" owner_scenarios
     failed_scenarios_report=$(cat owner_scenarios)
+
     # Get the pending report
     grep -r -b1 "@disable" features/remote/scenarios/ | grep "Scenario" | awk \'{$1=""; print $0}\' |  sed -e "s/^[ \\t]*//"  | sort -u > disable_scenarios
     questionable_cases_num=$(cat disable_scenarios | wc -l)
