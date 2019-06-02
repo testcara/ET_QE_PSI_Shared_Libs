@@ -104,7 +104,7 @@ $pending_scenarios_report
 </pre>
 """
 
-    String subject = " $currentResult: $env.BUILD_NUMBER for Commit $latestCommitShort"
+    String subject = " $currentResult: $env.JOB_NAME#$env.BUILD_NUMBER for Commit $latestCommitShort"
     if (to != null && !to.isEmpty()) {
         // Email on any failures, and on first success.
         mail to: to, subject: subject, body: body, mimeType: "text/html"
