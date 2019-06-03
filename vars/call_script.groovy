@@ -1,3 +1,3 @@
-def call(run_scirpt){
+def call(run_script){
 	sh "$run_script"
 }
