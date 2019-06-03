@@ -116,6 +116,12 @@ def call(String token, String appName, String templateNameofET, String templateN
 
 	                        restart_et_service(token, etPod)
 
+	                        echo "Add the pulp configuration files to runner"
+	                        sh """
+	                        mkdir ~/.rcm
+	                        cp /tmp/pulp_configs/.rcm/pulp-environments.json ~/.rcm/
+	                        """
+
 	                    }
 	                }
 	                stage('run TS2 testing'){
