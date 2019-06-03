@@ -26,7 +26,10 @@ def call(String token, String appName, String templateNameofET, String templateN
     volumes: [
     persistentVolumeClaim(
         claimName: 'et-qe-testing-mysql',
-        mountPath: '/tmp/TS2_db/')
+        mountPath: '/tmp/TS2_db/'),
+    persistentVolumeClaim(
+        claimName: 'pvc-errata-qe-test-mnt-redhat',
+        mountPath: '/mnt/redhat')
     ])
 	{
 	    node(runner) {
