@@ -12,6 +12,7 @@ def call(String token, String appName, String casesFeatures){
     containerTemplate(
         name: 'qe-testing-runner',
         image: 'docker-registry.upshift.redhat.com/errata-qe-test/qe_testing_upshift_runner:latest',
+        alwaysPullImage: true,
         command: 'cat',
         ttyEnabled: true,
 
