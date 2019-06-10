@@ -31,25 +31,31 @@ def call(String token, String appName, String casesFeatures){
 	    	try{
 	            stage('TS2 testing preparation'){
 	                container('qe-testing-runner'){
-                            def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | cut -d ' ' -f 1"
-	                    def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
-	                    echo "Got mysqlPod: ${mysqlPod}"
+                        def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | cut -d ' ' -f 1"
+                        def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
+                        echo "Got mysqlPod: ${mysqlPod}"
 
-	                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
-	                    def etPod = sh(returnStdout: true, script: cmd2).trim()
-	                    echo "Got etPod: ${etPod}"
+                        def cmd2="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
+                        def etPod = sh(returnStdout: true, script: cmd2).trim()
+                        echo "Got etPod: ${etPod}"
 
-	                    import_sql_files_to_db(token, mysqlPod, DB_FILE, MSYQL_USER, MYSQL_PASSWORD)
-	                    def db_migration_cmd = "bundle exec rake db:migrate"
-	                    run_cmd_against_pod(token, etPod, db_migration_cmd)
+                        import_sql_files_to_db(token, mysqlPod, DB_FILE, MSYQL_USER, MYSQL_PASSWORD)
+                        def db_migration_cmd = "bundle exec rake db:migrate"
+                        run_cmd_against_pod(token, etPod, db_migration_cmd)
 
-	                    disable_sending_qpid_message(token, etPod)
+                        disable_sending_qpid_message(token, etPod)
 
-	                    if(casesFeatures.contains('UMB')){
-	                        specify_cucumber_umb_broker(token, etPod)
-	                    }
+                        if(casesFeatures.contains('UMB')){
+                            specify_cucumber_umb_broker(token, etPod)
+                        }
 
-	                    restart_et_service(token, etPod)
+                        restart_et_service(token, etPod)
+
+                        echo "Add the pulp configuration files to runner"
+                        sh """
+                        mkdir ~/.rcm
+                        cp /tmp/pulp_configs/.rcm/pulp-environments.json ~/.rcm/
+                        """
 
 	                }
 	            }
