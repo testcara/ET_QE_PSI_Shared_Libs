@@ -26,7 +26,7 @@ def call(String token, String appName, String casesFeatures){
         claimName: 'et-qe-testing-mysql',
         mountPath: '/tmp/TS2_db/'),
     persistentVolumeClaim(
-        claimName: 'brew-qa',
+        claimName: 'pvc-errata-qe-test-mnt-redhat',
         mountPath: '/mnt/redhat')
     ])
 	{
