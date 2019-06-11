@@ -29,7 +29,6 @@ def call(String token, String name, String template, String templateParameters){
 		    objects.withEach {
 		        echo "${verb} ${it.name()} from template with labels ${it.object().metadata.labels}"
 		    }
-		    sleep(3600)
 		    return objects
 		} //project
 	} //cluster
