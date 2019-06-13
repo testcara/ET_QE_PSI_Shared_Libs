@@ -171,6 +171,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         finally{
           archiveArtifacts '**/cucumber-report*.json'
           cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
+          clean_ws()
         }
       } //if
     } //node
