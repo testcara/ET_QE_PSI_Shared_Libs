@@ -31,6 +31,7 @@ def call(String pubServer, String pulpServer, String pulpDockerServer) {
             export CI3_WORKSPACE="${WORKSPACE}/RC_CI-master/auto_testing_CI"
             cd RC_CI-master/auto_testing_CI/
             ./clean_pub_pulp_psi.sh
+            sleep 3600
             ./initial_pub_pulp_psi.sh
             '''
             }
