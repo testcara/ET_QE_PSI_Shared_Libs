@@ -10,6 +10,7 @@ def call(String token, String appName, String templateNameofET, String templateN
   def MYSQL_PASSWORD = "arNdk123_"
   def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
   def runner= "mypod-${UUID.randomUUID().toString()}"
+  etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
   def FAILED_STAGE
   podTemplate(label: runner,
   containers: [
