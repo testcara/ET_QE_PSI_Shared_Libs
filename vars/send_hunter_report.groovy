@@ -1,7 +1,6 @@
 def call(String api_username, String api_token, String mail_to) {
     String to = mail_to
     String currentResult = ""
-    String previousResult = currentBuild.getPreviousBuild().result
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
 
