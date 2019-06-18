@@ -126,11 +126,11 @@ def call(String token, String appName, String templateNameofET, String templateN
 
                 FAILED_STAGE=env.STAGE_NAME
                 retry(2) {
-                    def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | cut -d ' ' -f 1"
+                    def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | grep -v deploy |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
                     echo "Got mysqlPod: ${mysqlPod}"
 
-                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
+                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | grep -v deploy | cut -d ' ' -f 1"
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
