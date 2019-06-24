@@ -31,7 +31,7 @@ def call(){
                         git clone https://code.engineering.redhat.com/gerrit/errata-rails
                         cd errata-rails
                         git checkout develop
-                        RAILS_ENV=test bundle install
+                        RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
                         sleep 7200
                         '''
                   } //container
