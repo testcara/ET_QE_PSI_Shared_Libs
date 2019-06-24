@@ -1,4 +1,5 @@
 def call(){
+  def runner= "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
     containers: [
     containerTemplate(
