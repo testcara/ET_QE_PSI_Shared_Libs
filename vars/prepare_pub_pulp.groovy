@@ -30,10 +30,10 @@ def call(String pubServer, String pulpServer, String pulpDockerServer) {
             sh '''
             wget http://github.com/testcara/RC_CI/archive/master.zip
             unzip master.zip
-            export CI3_WORKSPACE="${WORKSPACE}/RC_CI-master/auto_testing_CI"
             cd RC_CI-master/auto_testing_CI/
+            export CI3_WORKSPACE="${WORKSPACE}/RC_CI-master/auto_testing_CI"
             ./clean_pub_pulp_psi.sh
-            sleep 3600
+            export CI3_WORKSPACE="${WORKSPACE}"
             ./initial_pub_pulp_psi.sh
             '''
             }
