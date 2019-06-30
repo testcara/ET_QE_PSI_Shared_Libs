@@ -25,8 +25,8 @@ def call(String pubServer, String pulpServer, String pulpDockerServer) {
             ])
 
             container('qe-pub-pulp-testing-runner') {
-            //sh '''git config --global http.sslVerify false'''
-            //git 'https://gitlab.infra.prod.eng.rdu2.redhat.com/yuzheng/ansible-pub-qe.git'
+            sh '''git config --global http.sslVerify false'''
+            git 'https://gitlab.infra.prod.eng.rdu2.redhat.com/yuzheng/ansible-pub-qe.git'
             sh '''
             wget http://github.com/testcara/RC_CI/archive/master.zip
             unzip master.zip
