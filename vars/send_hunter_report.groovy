@@ -1,8 +1,9 @@
-def call(String api_username, String api_token, String mail_to) {
+def call(String api_username, String api_token, String mail_to, String testing_type) {
     String to = mail_to
     String currentResult = ""
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
+    String testing_type = testing_type
 
     def causes = currentBuild.rawBuild.getCauses()
     // E.g. 'started by user', 'triggered by scm change'
@@ -61,7 +62,13 @@ def call(String api_username, String api_token, String mail_to) {
     fi
 
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
-    sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</p>" owner_scenarios
+
+    if [[ "${testing_type}" =~ "e2e" ]]
+    then
+      sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios</p>" owner_scenarios
+    else
+      sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</p>" owner_scenarios
+    fi
     failed_scenarios_report=$(cat owner_scenarios)
 
     # Get the pending report
@@ -73,14 +80,18 @@ def call(String api_username, String api_token, String mail_to) {
     questionable_cases_num=$(cat owner_scenarios | wc -l)
     if [[ ${questionable_cases_num} -eq 0 ]]
     then
-    echo "<p style=\'font-family:arial\'>No pending/disabled scenarios, cheers!</p>" >> owner_scenarios
+    echo "<p style=\'font-family:arial\'>No pending scenarios, cheers!</p>" >> owner_scenarios
     fi
 
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
-    sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Disabled/Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</p>" owner_scenarios
+    sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</p>" owner_scenarios
     disable_scenarios_report=$(cat owner_scenarios)
-
-    report="<pre>${failed_scenarios_report}${disable_scenarios_report}</pre>"
+    if [[ "${testing_type}" =~ "e2e" ]]
+    then
+      report = "<pre>${failed_scenarios_report}</pre>"
+    else
+      report = "<pre>${failed_scenarios_report}${disable_scenarios_report}</pre>"
+    fi
     echo ${report}
     '''
 
