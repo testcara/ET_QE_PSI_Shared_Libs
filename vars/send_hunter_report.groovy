@@ -62,12 +62,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
 
     failure_percentage=$(awk "BEGIN {print (${questionable_cases_num}/$total_scenarios_num*100)}" | cut -c 1-5)
 
-    if [[ "${testing_type}" =~ "e2e" ]]
-    then
-      sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios</p>" owner_scenarios
-    else
-      sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</p>" owner_scenarios
-    fi
+    sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Failed Scenarios(${questionable_cases_num}/$total_scenarios_num=${failure_percentage}%)</p>" owner_scenarios
     failed_scenarios_report=$(cat owner_scenarios)
 
     # Get the pending report
