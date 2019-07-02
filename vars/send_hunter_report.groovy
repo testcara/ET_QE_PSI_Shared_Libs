@@ -4,6 +4,13 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
 
+    def causes = currentBuild.rawBuild.getCauses()
+    // E.g. 'started by user', 'triggered by scm change'
+    def cause = null
+    if (!causes.isEmpty()) {
+        cause = causes[0].getShortDescription()
+    }
+
     String failed_causes = sh(returnStdout: true, script: 'find . -name "*_failed_stages" | xargs cat')
 
     String cucumber_report_url = env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
