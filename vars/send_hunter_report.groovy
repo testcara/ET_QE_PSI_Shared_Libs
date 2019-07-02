@@ -19,7 +19,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     if (failed_causes?.trim()) {
         body = body + """
         <p style='font-family:arial'>
-        Failed Stages: $failed_stages
+        Failed Stages: $failed_causes
         </p>
         """
     else {
@@ -28,7 +28,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
         Failed Stages: None
         </p>
         """
-    }
+    } //if
 
     body = body + """
     <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
