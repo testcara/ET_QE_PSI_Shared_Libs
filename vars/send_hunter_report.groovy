@@ -4,15 +4,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
 
-    def causes = currentBuild.rawBuild.getCauses()
-    // E.g. 'started by user', 'triggered by scm change'
-    def cause = null
-    if (!causes.isEmpty()) {
-        cause = causes[0].getShortDescription()
-    }
-
-    causes = null
-
+    String failed_causes = sh(returnStdout: true, script: 'find . -name "*_failed_stages" | xargs cat')
 
     String cucumber_report_url = env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
     String cucumber_failure_url = env.BUILD_URL + "cucumber-html-reports/overview-failures.html"
@@ -21,8 +13,25 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     <p style='font-family:arial'>
     <p>Latest Commit: "$latestCommit"</p>
     <p>Build Trigger: $cause</p>
-    <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
     </p>
+    """
+
+    if (failed_causes?.trim()) {
+        body = body + """
+        <p style='font-family:arial'>
+        Failed Stages: $failed_stages
+        </p>
+        """
+    else {
+        body = body + """
+        <p style='font-family:arial'>
+        Failed Stages: None
+        </p>
+        """
+    }
+
+    body = body + """
+    <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
     """
 
     sh "echo $testing_type > testing_type"
@@ -33,6 +42,14 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     sh "grep -b12 \'<tfoot\' cucumber_report.html | tail -n1 | cut -d \'>\' -f 2 | cut -d \'<\' -f 1 > total_scenarios_num"
 
     String general_report = sh returnStdout: true, script: '''
+    # Sometimes, there is no cucumber report, curl will generate 'Not found' report
+    deal_empty_report(){
+        if [[ ${total_scenarios_num} == "" ]]
+        then
+          echo "<p>Error: The cucumber report is not available. Please check the 'Failed Stages'!</p>"
+          exit 0
+        fi
+    }
     get_blame_file(){
         # failed_scenarios or disable_scenarios are needed as the parameter
         rm -rf blame_file
@@ -51,6 +68,8 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     }
 
     total_scenarios_num=$(cat total_scenarios_num)
+    deal_empty_report
+
     # Get the failure report
     cat cucumber_failure_report.html | grep -b1 Scenario  | grep -v "brief" | awk \'{$1=""; print $0}\' | cut -d ">" -f 2- | cut -d "<" -f 1 | sed "/^$/d"| sed -n "{N;s/\\n/: /p}" | sort -u > failed_scenarios
     get_blame_file failed_scenarios
