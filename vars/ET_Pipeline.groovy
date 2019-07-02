@@ -186,6 +186,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         sh "echo Exception for testing ${appName}: Failed at ${FAILED_STAGE} > ${appName}_failed_stages"
       } //catch
       finally{
+        archiveArtifacts '**/*_failed_stages'
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
         clean_ws()
