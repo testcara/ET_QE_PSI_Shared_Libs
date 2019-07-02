@@ -1,4 +1,4 @@
-def call(String api_username, String api_token, String mail_to, String testing_type) {
+def call(String api_username, String api_token, String mail_to, String testing_type = '') {
     String to = mail_to
     String currentResult = ""
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
