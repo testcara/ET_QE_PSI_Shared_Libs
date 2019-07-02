@@ -80,6 +80,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     disable_percentage=$(awk "BEGIN {print (${questionable_cases_num}/${total_scenarios_num}*100)}" | cut -c 1-5)
     sed -i "1 i <p style=\'font-family:arial; font-size: 1em; font-weight: bold\'>Pending Scenarios(${questionable_cases_num}/${total_scenarios_num}=${disable_percentage}%)</p>" owner_scenarios
     disable_scenarios_report=$(cat owner_scenarios)
+    report = ""
     if [[ "${testing_type}" =~ "e2e" ]]
     then
       report = "<pre>${failed_scenarios_report}</pre>"
