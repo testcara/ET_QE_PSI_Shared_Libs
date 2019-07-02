@@ -22,7 +22,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
         Failed Stages: $failed_causes
         </p>
         """
-    else {
+    } else {
         body = body + """
         <p style='font-family:arial'>
         Failed Stages: None
