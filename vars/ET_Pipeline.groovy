@@ -12,6 +12,7 @@ def call(String token, String appName, String templateNameofET, String templateN
   def runner= "mypod-${UUID.randomUUID().toString()}"
   etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
   def FAILED_STAGE
+
   podTemplate(label: runner,
   containers: [
   containerTemplate(
@@ -38,7 +39,7 @@ def call(String token, String appName, String templateNameofET, String templateN
       try {
         stage('clean apps') {
           container('qe-testing-runner'){
-            FAILED_STAGE=env.STAGE_NAME
+            script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               [appName, "${appName}-mysql"].each {
                 if(parallel=="true"){
@@ -53,7 +54,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         if(parallel=="false"){
           stage('parepare templates'){
             container('qe-testing-runner'){
-              FAILED_STAGE=env.STAGE_NAME
+              script { FAILED_STAGE=env.STAGE_NAME }
               retry(2) {
                 [templateNameofET, templateNameofMysql].each {
                   clean_up(token, it, 'template')
@@ -66,7 +67,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 
         stage('create mysql app'){
           container('qe-testing-runner'){
-            FAILED_STAGE=env.STAGE_NAME
+            script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               echo "app-name:${appName}-mysql "
               if(parallel=="true"){
@@ -79,7 +80,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         } //stage
         stage('create et app'){
           container('qe-testing-runner'){
-            FAILED_STAGE=env.STAGE_NAME
+            script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               if(parallel=="true"){
                 create_apps_by_oc(token, appName, templateNameofET, etTemplateParameters)
@@ -91,7 +92,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         } //stage
         stage('build mysql app'){
           container('qe-testing-runner'){
-            FAILED_STAGE=env.STAGE_NAME
+            script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               build_bc_and_track_build_by_oc(token, 20, "${appName}-mysql")
             } //retry
@@ -99,7 +100,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         } //stage
         stage('deploy mysql app'){
           container('qe-testing-runner'){
-            FAILED_STAGE=env.STAGE_NAME
+            script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               deploy_dc_and_track_deployment_by_oc(token, 5, "${appName}-mysql")
             } //retry
@@ -107,6 +108,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         } //stage
         stage('build et app'){
           container('qe-testing-runner'){
+            script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               build_bc_and_track_build_by_oc(token, 20, "${appName}-bc")
             } //retry
@@ -114,7 +116,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         } //stage
         stage('deploy et app'){
           container('qe-testing-runner'){
-            FAILED_STAGE=env.STAGE_NAME
+            script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               deploy_dc_and_track_deployment_by_oc(token, 5, "${appName}-rails")
             } //retry
@@ -123,8 +125,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         if(qeTesting=='true'){
           stage('TS2 testing preparation'){
               container('qe-testing-runner'){
-
-                FAILED_STAGE=env.STAGE_NAME
+                script { FAILED_STAGE=env.STAGE_NAME }
                 retry(2) {
                     def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | grep -v deploy |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
@@ -159,7 +160,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 
           stage('run TS2 testing'){
             container('qe-testing-runner'){
-              FAILED_STAGE=env.STAGE_NAME
+              script { FAILED_STAGE=env.STAGE_NAME }
               sh '''
               git clone https://code.engineering.redhat.com/gerrit/errata-rails
               cd errata-rails
@@ -181,7 +182,8 @@ def call(String token, String appName, String templateNameofET, String templateN
         } //if
       } //try
       catch(Exception e) {
-        echo "Failed stage name: ${FAILED_STAGE}"
+        echo "Exception for testing ${appName}: Failed at ${FAILED_STAGE}"
+        sh "echo Exception for testing ${appName}: Failed at ${FAILED_STAGE} > ${appName}_failed_stages"
       } //catch
       finally{
         archiveArtifacts '**/cucumber-report*.json'
