@@ -12,7 +12,9 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     }
 
     print("get failed causes ....")
-    String failed_causes = sh(returnStdout: true, script: 'find . -name "*_failed_stages" | xargs cat')
+    String failed_causes = sh returnStdout: true, script: '''
+    find . -name "*_failed_stages" | xargs cat || true
+    '''
     print(failed_causes)
 	print("end to output failed causes ...")
 
