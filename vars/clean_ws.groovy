@@ -1,6 +1,6 @@
 def call(){
 	sh '''
-	deleteDir()
+	# deleteDir()
 	find . -name "*.log" | xargs rm -rf
 	'''
 }
