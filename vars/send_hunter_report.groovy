@@ -27,10 +27,12 @@ def call(String api_username, String api_token, String mail_to, String testing_t
 
     String body = """
     <p style='font-family:arial'>
-    <p>Latest Commit: "$latestCommit"</p>
+    <p>Latest Commit: $latestCommit</p>
     <p>Build Trigger: $cause</p>
     </p>
     """
+    print(body)
+    print("---0")
 
     if (failed_causes?.trim()) {
         body = body + """
@@ -46,9 +48,14 @@ def call(String api_username, String api_token, String mail_to, String testing_t
         """
     } //if
 
+    print(body)
+    print("---1")
     body = body + """
     <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
     """
+
+    print(body)
+    print("---2")
 
     sh "echo $testing_type > testing_type"
 
