@@ -25,8 +25,6 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     <p>Build Trigger: $cause</p>
     </p>
     """
-    print(body)
-    print("---0")
 
     if (failed_causes?.trim()) {
         body = body + """
@@ -46,15 +44,10 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     <p>For more details, please reach the <a href=\"$env.BUILD_URL\">build log</a> and the original <a href=\"$cucumber_report_url\">cucumber report.</a></p>
     """
 
-    print("---1")
 
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_failure_url >  cucumber_failure_report.html"
-    print("---2")
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_report_url >  cucumber_report.html"
-    print("---3")
     sh "grep -b12 \'<tfoot\' cucumber_report.html | tail -n1 | cut -d \'>\' -f 2 | cut -d \'<\' -f 1 > total_scenarios_num"
-    
-    print("---6")
     sh "echo $testing_type > testing_type"
     
     String general_report = sh returnStdout: true, script: '''
@@ -84,7 +77,6 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     }
 
     total_scenarios_num=$(cat total_scenarios_num)
-    echo "-----7"
     deal_empty_report
 
     # Get the failure report
