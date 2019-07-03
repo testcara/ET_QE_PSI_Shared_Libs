@@ -63,7 +63,9 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_report_url >  cucumber_report.html"
     
     sh "grep -b12 \'<tfoot\' cucumber_report.html | tail -n1 | cut -d \'>\' -f 2 | cut -d \'<\' -f 1 > total_scenarios_num"
-
+    
+    print("---3")
+    
     String general_report = sh returnStdout: true, script: '''
     # Sometimes, there is no cucumber report, curl will generate 'Not found' report
     deal_empty_report(){
@@ -91,6 +93,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     }
 
     total_scenarios_num=$(cat total_scenarios_num)
+    echo "-----4"
     deal_empty_report
 
     # Get the failure report
