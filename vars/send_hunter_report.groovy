@@ -29,7 +29,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     if (failed_causes?.trim()) {
         body = body + """
         <p style='font-family:arial'>
-        Failed Stages: $failed_causes
+        Failed Stages:<br>$failed_causes
         </p>
         """
     } else {
