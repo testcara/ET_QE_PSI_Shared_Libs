@@ -48,22 +48,16 @@ def call(String api_username, String api_token, String mail_to, String testing_t
         """
     } //if
 
-    print(body)
-    print("---1")
     body = body + """
-    <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
+    <p>For more details, please reach the <a href=\"$env.BUILD_URL\">build log</a> and the original <a href=\"$cucumber_report_url\">cucumber report.</a></p>
     """
 
-    print(body)
-    print("---2")
+    print("---1")
 
- 
-    
-    print("---3")
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_failure_url >  cucumber_failure_report.html"
-    print("---4")
+    print("---2")
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_report_url >  cucumber_report.html"
-    print("---5")
+    print("---3")
     sh "grep -b12 \'<tfoot\' cucumber_report.html | tail -n1 | cut -d \'>\' -f 2 | cut -d \'<\' -f 1 > total_scenarios_num"
     
     print("---6")
