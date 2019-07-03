@@ -11,7 +11,10 @@ def call(String api_username, String api_token, String mail_to, String testing_t
         cause = causes[0].getShortDescription()
     }
 
+    print("get failed causes ....")
     String failed_causes = sh(returnStdout: true, script: 'find . -name "*_failed_stages" | xargs cat')
+    print(failed_causes)
+	print("end to output failed causes ...")
 
     String cucumber_report_url = env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
     String cucumber_failure_url = env.BUILD_URL + "cucumber-html-reports/overview-failures.html"
