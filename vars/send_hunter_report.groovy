@@ -10,6 +10,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     if (!causes.isEmpty()) {
         cause = causes[0].getShortDescription()
     }
+    causes = null
 
     def failed_causes = sh returnStdout: true, script: '''
     find . -name "*_failed_stages" | xargs cat || true
