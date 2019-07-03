@@ -52,7 +52,7 @@ def call(String token, String appName, String templateNameofET, String templateN
           } //container
         } //stage
         if(parallel=="false"){
-          stage('parepare templates'){
+          stage('prepare templates'){
             container('qe-testing-runner'){
               script { FAILED_STAGE=env.STAGE_NAME }
               retry(2) {
@@ -186,6 +186,7 @@ def call(String token, String appName, String templateNameofET, String templateN
         sh "echo Exception for testing ${appName}: Failed at ${FAILED_STAGE} > ${appName}_failed_stages"
       } //catch
       finally{
+        sleep(3600)
         archiveArtifacts '*_failed_stages'
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
