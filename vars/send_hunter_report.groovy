@@ -58,7 +58,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     print("---2")
 
  
-    sh "echo $testing_type > testing_type_1"
+    
     print("---3")
     sh "curl --insecure -X GET -u $api_username:$api_token $cucumber_failure_url >  cucumber_failure_report.html"
     print("---4")
@@ -67,6 +67,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     sh "grep -b12 \'<tfoot\' cucumber_report.html | tail -n1 | cut -d \'>\' -f 2 | cut -d \'<\' -f 1 > total_scenarios_num"
     
     print("---6")
+    sh "echo $testing_type > testing_type"
     
     String general_report = sh returnStdout: true, script: '''
     # Sometimes, there is no cucumber report, curl will generate 'Not found' report
