@@ -20,6 +20,7 @@ def call(String et_server, String et_version){
       sh "echo $et_version > et_version"
       sh '''
         whoami || true
+		sleep 3600
         /usr/local/bin/ci-3-jenkins-slave
         whoami || true
         export ET_Testing_Server=$(cat et_server)
