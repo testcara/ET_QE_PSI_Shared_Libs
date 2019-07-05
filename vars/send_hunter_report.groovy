@@ -94,7 +94,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     disable_scenarios_report=$(cat owner_scenarios)
     report=""
 
-    testing_type=$(cat testing_type_1)
+    testing_type=$(cat testing_type)
     if [[ "${testing_type}" =~ "e2e" ]]
     then
       report="<pre>${failed_scenarios_report}</pre>"
