@@ -1,4 +1,4 @@
-def call(String et_server, String et_version){
+def call(String et_server, String et_version, String errata_fetch_brew_build='false'){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -11,6 +11,7 @@ def call(String et_server, String et_version){
     envVars: [
       envVar(key: 'GIT_SSL_NO_VERIFY', value: 'true')
     ]
+
     )]
   )
   {
@@ -18,12 +19,14 @@ def call(String et_server, String et_version){
       container('et-ansible-runner'){
         sh "echo $et_server > et_server"
         sh "echo $et_version > et_version"
+        sh "echo $errata_fetch_brew_build > errata_fetch_brew_build"
         sh '''
           whoami || true
           ci-3-jenkins-slave
           whoami
           export ET_Testing_Server=$(cat et_server)
           export et_build_name_or_id=$(cat et_version)
+          export errata_fetch_brew_build=$(cat errata_fetch_brew_build)
           git config --global http.sslVerify false
           git clone https://gitlab.infra.prod.eng.rdu2.redhat.com/ansible-playbooks/errata-tool-playbooks.git
           wget http://github.com/testcara/RC_CI/archive/master.zip
