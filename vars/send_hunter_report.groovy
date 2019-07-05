@@ -21,7 +21,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     <p style='font-family:arial'>
     <p>Latest Commit: "$latestCommit"</p>
     <p>Build Trigger: $cause</p>
-    <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> and the original <a href="$cucumber_report_url">cucumber report.</a></p>
+    <p>For more details, please reach the <a href="$env.BUILD_URL">build log</a> or the original <a href="$cucumber_report_url">cucumber report.</a></p>
     </p>
     """
 
