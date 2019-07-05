@@ -1,4 +1,6 @@
-def call(String et_server, String et_version=""){
+def call(String et_server, String et_version){
+  sh "echo $et_server > et_server"
+  sh "echo $et_version > et_version"
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -18,10 +20,8 @@ def call(String et_server, String et_version=""){
     node(runner) {
       script{
         sh '''
-        sh "echo export ET_Testing_Server=$et_server > /home/jenins/.bashrc"
-        sh "echo export et_build_name_or_id=$et_version >> /home/jenkins/.bashrc"
-        source /home/jenkins/.bashrc
-        git config --global http.sslVerify false
+        export ET_Testing_Server=$(cat et_server)
+        export et_build_name_or_id=$(cat et_version)
         git clone https://gitlab.infra.prod.eng.rdu2.redhat.com/ansible-playbooks/errata-tool-playbooks.git
         wget http://github.com/testcara/RC_CI/archive/master.zip
         unzip master.zip
