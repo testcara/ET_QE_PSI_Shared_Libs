@@ -18,6 +18,7 @@ def call(){
     node(runner) {
       script{
       sh '''
+        git config --global http.sslVerify false
         git clone https://gitlab.infra.prod.eng.rdu2.redhat.com/ansible-playbooks/errata-tool-playbooks.git
         wget http://github.com/testcara/RC_CI/archive/master.zip
         sleep 7200
