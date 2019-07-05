@@ -19,6 +19,8 @@ def call(String et_server, String et_version){
       sh "echo $et_server > et_server"
       sh "echo $et_version > et_version"
       sh '''
+        whoami
+        ci-3-jenkins-slave
         export ET_Testing_Server=$(cat et_server)
         export et_build_name_or_id=$(cat et_version)
         git config --global http.sslVerify false
