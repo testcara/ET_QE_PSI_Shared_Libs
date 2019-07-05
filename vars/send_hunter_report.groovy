@@ -37,7 +37,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     deal_empty_report(){
         if [[ ${total_scenarios_num} == "" ]]
         then
-          echo "<p>Error: The cucumber report is not available. Please search 'Failed Stages' in the original build log!</p>"
+          echo "<p>Error: The cucumber report is not available. Please search 'Failed at' to locate failed stage in the original build log!</p>"
           exit 0
         fi
     }
