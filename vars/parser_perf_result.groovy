@@ -23,7 +23,6 @@ def call(String jenkins_username, String jenkins_user_token, String et_build_nam
         sh "echo $performance_tolerance > performance_tolerance"
         sh "echo $perf_jmeter_slave_server > perf_jmeter_slave_server"
         sh "echo $max_accepted_time > max_accepted_time"
-        sh "echo env.BUILD_URL.split('/')[2].split(':')[0] > jenkins_url"
         sh '''
           whoami || true
           psi-jenkins-slave
@@ -36,7 +35,7 @@ def call(String jenkins_username, String jenkins_user_token, String et_build_nam
           export tolerance=$(cat performance_tolerance)
           export perf_jmeter_slave_server=$(cat perf_jmeter_slave_server)
           export max_accepted_time=$(cat max_accepted_time)
-          export RC_Jenkins_URL=$(cat jenkins_url)
+          export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
 
           echo "===============Download the CI files under $(pwd)=========="
           wget http://github.com/testcara/RC_CI/archive/master.zip
