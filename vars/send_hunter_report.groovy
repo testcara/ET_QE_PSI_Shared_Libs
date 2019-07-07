@@ -111,9 +111,11 @@ def call(String api_username, String api_token, String mail_to, String testing_t
         currentResult = 'FAILED'
     }
 
-
     body = body + general_report
+    echo "Body ..."
+    echo body
 
+    echo "Sending mail now ..."
     String subject = " $currentResult: $env.JOB_NAME#$env.BUILD_NUMBER for Commit $latestCommitShort"
     if (to != null && !to.isEmpty()) {
         // Email on any failures, and on first success.
