@@ -49,6 +49,7 @@ def call(String jenkins_username, String jenkins_user_token, String et_build_nam
 
           cd RC_CI-master/auto_testing_CI
           echo "=== Parser performance report ==="
+          sleep 3600000
           python talk_to_rc_jenkins_to_parser_perf_report.py ${username} ${password} ${et_build_version} ${tolerance} ${max_accepted_time} ${perf_jmeter_slave_server}
           '''
         } //container
