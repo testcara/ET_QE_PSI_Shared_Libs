@@ -1,4 +1,4 @@
-def call(String perf_username, String perf_user_token, String et_build_name_or_id, String performance_tolerance, String perf_jmeter_slave_server, String max_accepted_time){
+def call(String jenkins_username, String jenkins_user_token, String et_build_name_or_id, String performance_tolerance, String perf_jmeter_slave_server, String max_accepted_time){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -17,24 +17,26 @@ def call(String perf_username, String perf_user_token, String et_build_name_or_i
   {
     node(runner) {
       container('et-ansible-runner'){
-        sh "echo $perf_username  > perf_username"
-        sh "echo $perf_user_token > perf_user_token"
+        sh "echo $jenkins_username  > jenkins_username"
+        sh "echo $jenkins_user_token > jenkins_user_token"
         sh "echo $et_build_name_or_id > et_build_name_or_id"
         sh "echo $performance_tolerance > performance_tolerance"
         sh "echo $perf_jmeter_slave_server > perf_jmeter_slave_server"
-		sh "echo $max_accepted_time > max_accepted_time"
+        sh "echo $max_accepted_time > max_accepted_time"
+        sh "echo env.BUILD_URL.split('/')[2].split(':')[0] > jenkins_url"
         sh '''
           whoami || true
           psi-jenkins-slave
           whoami
 
           source /etc/bashrc
-          export username=$(cat perf_username)
-          export password=$(cat perf_user_token)
+          export username=$(cat jenkins_username)
+          export password=$(cat jenkins_user_token)
           export et_build_name_or_id=$(cat et_build_name_or_id)
           export tolerance=$(cat performance_tolerance)
-		  export perf_jmeter_slave_server=$(cat perf_jmeter_slave_server)
+          export perf_jmeter_slave_server=$(cat perf_jmeter_slave_server)
           export max_accepted_time=$(cat max_accepted_time)
+          export RC_Jenkins_URL=$(cat jenkins_url)
 
           echo "===============Download the CI files under $(pwd)=========="
           wget http://github.com/testcara/RC_CI/archive/master.zip
@@ -48,7 +50,7 @@ def call(String perf_username, String perf_user_token, String et_build_name_or_i
 
           cd RC_CI-master/auto_testing_CI
           echo "=== Parser performance report ==="
-		  python talk_to_rc_jenkins_to_parser_perf_report.py ${username} ${password} ${et_build_version} ${tolerance} ${max_accepted_time} ${perf_jmeter_slave_server}  
+          python talk_to_rc_jenkins_to_parser_perf_report.py ${username} ${password} ${et_build_version} ${tolerance} ${max_accepted_time} ${perf_jmeter_slave_server}
           '''
         } //container
     } // node
