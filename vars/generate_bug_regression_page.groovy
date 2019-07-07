@@ -25,7 +25,7 @@ def call(String et_build_name_or_id, String confluence_username, String confluen
         sh "echo $jira_parent_page > jira_parent_page"
         sh '''
           whoami || true
-          ci-3-jenkins-slave
+          psi-jenkins-slave
           whoami
 
           export et_build_name_or_id=$(cat et_build_name_or_id)
