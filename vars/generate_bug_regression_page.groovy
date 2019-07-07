@@ -28,6 +28,7 @@ def call(String et_build_name_or_id, String confluence_username, String confluen
           psi-jenkins-slave
           whoami
 
+          source /etc/bashrc
           export et_build_name_or_id=$(cat et_build_name_or_id)
           export confluence_username=$(cat confluence_username)
           export confluence_password=$(cat confluence_password)
