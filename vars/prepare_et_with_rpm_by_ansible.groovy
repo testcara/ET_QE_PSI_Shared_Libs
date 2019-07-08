@@ -26,7 +26,7 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
         sh "echo $dev_jenkins_user_token > dev_jenkins_user_token"
         sh '''
           whoami || true
-          ci-3-jenkins-slave
+          psi-jenkins-slave
           whoami
 
           export dev_jenkins_user=$(cat dev_jenkins_user)
