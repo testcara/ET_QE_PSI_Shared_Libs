@@ -42,10 +42,11 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
           wget http://github.com/testcara/RC_CI/archive/master.zip
           unzip master.zip
           export WORKSPACE=`pwd`
+          export PYTHONHTTPSVERIFY=0
 
           if [[ "${get_latest_dev_build}" == "true" ]]
           then
-            et_build_name_or_id=$(RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
+            et_build_name_or_id=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
           fi
 
           RC_CI-master/auto_testing_CI/prepare_et_server_with_rpm_by_ansible.sh
