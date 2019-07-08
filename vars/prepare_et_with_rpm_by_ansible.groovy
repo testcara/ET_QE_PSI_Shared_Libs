@@ -44,6 +44,10 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
           export WORKSPACE=`pwd`
           export PYTHONHTTPSVERIFY=0
 
+          source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+          source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+          install_scripts_env
+
           if [[ "${get_latest_dev_build}" == "true" ]]
           then
             et_build_name_or_id=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
