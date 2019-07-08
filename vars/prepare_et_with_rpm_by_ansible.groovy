@@ -3,8 +3,8 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
   podTemplate(label: runner,
   containers: [
   containerTemplate(
-    name: 'et-ansible-runner',
-    image: 'docker-registry.upshift.redhat.com/errata-qe-test/et_ansible_runner:latest',
+    name: 'et_python2_runner',
+    image: 'docker-registry.upshift.redhat.com/errata-qe-test/et_python2_runner:latest',
     alwaysPullImage: true,
     command: 'cat',
     ttyEnabled: true,
@@ -16,7 +16,7 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
   )
   {
     node(runner) {
-      container('et-ansible-runner'){
+      container('et_python2_runner'){
         sh "echo $et_server > et_server"
         sh "echo $et_version > et_version"
         sh "echo $errata_fetch_brew_build > errata_fetch_brew_build"
