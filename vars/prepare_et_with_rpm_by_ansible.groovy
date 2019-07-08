@@ -1,4 +1,4 @@
-def call(String dev_jenkins_user, String dev_jenkins_user_token, String dev_jenkins_job, String et_server, String et_version, String errata_fetch_brew_build='false', String get_latest_dev_build='false'){
+def call(String et_server, String et_version, String errata_fetch_brew_build='false', String get_latest_dev_build='false', String dev_jenkins_user='', String dev_jenkins_user_token='', String dev_jenkins_job=''){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -17,13 +17,13 @@ def call(String dev_jenkins_user, String dev_jenkins_user_token, String dev_jenk
   {
     node(runner) {
       container('et-ansible-runner'){
-        sh "echo $dev_jenkins_user > dev_jenkins_user"
-        sh "echo $dev_jenkins_user_token > dev_jenkins_user_token"
         sh "echo $et_server > et_server"
         sh "echo $et_version > et_version"
         sh "echo $errata_fetch_brew_build > errata_fetch_brew_build"
         sh "echo $get_latest_dev_build > get_latest_dev_build"
         sh "echo $dev_jenkins_job > dev_jenkins_job"
+        sh "echo $dev_jenkins_user > dev_jenkins_user"
+        sh "echo $dev_jenkins_user_token > dev_jenkins_user_token"
         sh '''
           whoami || true
           ci-3-jenkins-slave
