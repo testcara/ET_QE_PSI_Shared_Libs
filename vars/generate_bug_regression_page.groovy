@@ -56,7 +56,7 @@ def call(String et_build_name_or_id, String confluence_username, String confluen
           echo "=== update the confluence with the content ==="
           python confluence_client.py "${confluence_username}" "${confluence_password}" "${title}" "${space}" "${content}" "${jira_parent_page}"
           echo "=====================Testing Report: Begin=================="
-          echo "ET RC Version: ${et_build_version}"
+          echo "ET Version/Commit: ${et_build_version}"
           echo "Testing Type: Bug Regression Testing"
           echo "Testing Result: IN PROGRESS"
           echo "Testing Report URL: https://docs.engineering.redhat.com/display/PDT/Bug+Regression+Reports+For+Build+${et_build_version}"
