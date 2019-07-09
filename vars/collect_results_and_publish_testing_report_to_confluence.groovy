@@ -37,6 +37,7 @@ def call(String et_build_name_or_id, String jenkins_username, String jenkins_pas
           export confluence_password=$(cat confluence_password)
           export space=$(cat space)
           export parent_page=$(cat parent_page)
+          export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
 
           echo "===============Download the CI files under $(pwd)=========="
           wget http://github.com/testcara/RC_CI/archive/master.zip
