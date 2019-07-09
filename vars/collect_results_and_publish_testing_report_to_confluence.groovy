@@ -1,4 +1,4 @@
-def call(String psi_jenkins_username, String psi_jenkins_password, String confluence_username, String confluence_password, String dev_jenkins_user, String dev_jenkins_password, String dev_jenkins_job='', String et_build_name_or_id="", String space='PDT', String parent_page='56821226'){
+def call(String psi_jenkins_username, String psi_jenkins_password, String confluence_username, String confluence_password, String dev_jenkins_username, String dev_jenkins_password, String dev_jenkins_job='', String et_build_name_or_id="", String space='PDT', String parent_page='56821226'){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
