@@ -121,16 +121,10 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     echo body
 
     sh "echo \"$latestCommit\" > commit"
-    sh "echo $latestCommit > commit_1"
-    sh "echo 828e8a2bd56e914fe93f4701b9dcb6fe9f4dc0de > commit_2"
     sh "echo $testing_type > testing_type"
     sh "echo $currentResult > current_result"
     sh "echo $test_report_url > test_report_url"
     sh '''
-    cat commit
-    cat commit_1
-    cat commit_2
-    sleep 3600
     export commit=$(cat commit)
     export testing_type=$(cat testing_type)
     export current_result=$(cat current_result)
