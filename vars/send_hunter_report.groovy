@@ -131,9 +131,9 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     export test_report_url=$(cat test_report_url)
 
     echo "=====================Testing Report: Begin=================="
-    echo "ET Version/Commit: ${commit}"
+    echo "ET Version/Commit: ${short_commit}"
     echo "Testing Type: ${testing_type}"
-    echo "Testing Result: ${current_result} 
+    echo "Testing Result: ${current_result}"
     echo "Testing Report URL: ${test_report_url}"
     echo "=====================Testing Report: End================"
     '''
