@@ -6,16 +6,24 @@ def call(String mail_to){
     test_log=$(cat test_log)
     echo $test_log | cut -d "=" -f 20- | cut -d "[" -f 1 | cut -d ',' -f 2 | cut -c 2-
     '''
+    echo "et version: $build_version"
+
     def general_status = sh returnStdout: true, script: '''
     test_log=$(cat test_log)
     echo $test_log | cut -d "=" -f 20- | cut -d "[" -f 1 | cut -d ',' -f 3 | cut -c 2-
     '''
+    echo "general_status: $general_status"
+
     def general_summary = sh returnStdout: true, script: '''
     test_log=$(cat test_log)
     echo $test_log | cut -d "=" -f 20- | cut -d "[" -f 1 | cut -d ',' -f 4- | cut -c 2- | tr -d ','
     '''
+    echo "general_summary: $general_summary"
+
+
     def title = "ET Testing Reports For Build $build_version"
     def report_link = "https://docs.engineering.redhat.com/display/PDT/ET+Testing+Reports+For+Build+$build_version"
+    
     echo "Sending mail now ..."
     String subject = "Testing Report for Build-" + build_version + "-" + general_status
     body = '''
