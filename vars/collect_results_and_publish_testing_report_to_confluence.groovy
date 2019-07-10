@@ -56,7 +56,7 @@ def call(String psi_jenkins_username, String psi_jenkins_password, String conflu
           et_build_version=$(initial_et_build_version ${et_build_name_or_id})
           if [[ "$et_build_version" == "" ]]
           then
-            et_build_version=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
+            et_build_version=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_username} ${dev_jenkins_password} ${dev_jenkins_job})
           fi
 
           title="ET Testing Reports For Build ${et_build_version}"
