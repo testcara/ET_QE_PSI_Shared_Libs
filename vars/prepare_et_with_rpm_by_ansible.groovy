@@ -24,37 +24,50 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
         sh "echo $dev_jenkins_job > dev_jenkins_job"
         sh "echo $dev_jenkins_user > dev_jenkins_user"
         sh "echo $dev_jenkins_user_token > dev_jenkins_user_token"
-        sh '''
-          whoami || true
-          psi-jenkins-slave
-          whoami
+        try {
+          sh '''
+            whoami || true
+            psi-jenkins-slave
+            whoami
 
-          export dev_jenkins_user=$(cat dev_jenkins_user)
-          export dev_jenkins_user_token=$(cat dev_jenkins_user_token)
-          export ET_Testing_Server=$(cat et_server)
-          export et_build_name_or_id=$(cat et_version)
-          export errata_fetch_brew_build=$(cat errata_fetch_brew_build)
-          export get_latest_dev_build=$(cat get_latest_dev_build)
-          export dev_jenkins_job=$(cat dev_jenkins_job)
+            export dev_jenkins_user=$(cat dev_jenkins_user)
+            export dev_jenkins_user_token=$(cat dev_jenkins_user_token)
+            export ET_Testing_Server=$(cat et_server)
+            export et_build_name_or_id=$(cat et_version)
+            export errata_fetch_brew_build=$(cat errata_fetch_brew_build)
+            export get_latest_dev_build=$(cat get_latest_dev_build)
+            export dev_jenkins_job=$(cat dev_jenkins_job)
 
-          git config --global http.sslVerify false
-          git clone https://gitlab.infra.prod.eng.rdu2.redhat.com/ansible-playbooks/errata-tool-playbooks.git
-          wget http://github.com/testcara/RC_CI/archive/master.zip
-          unzip master.zip
-          export WORKSPACE=`pwd`
-          export PYTHONHTTPSVERIFY=0
+            git config --global http.sslVerify false
+            git clone https://gitlab.infra.prod.eng.rdu2.redhat.com/ansible-playbooks/errata-tool-playbooks.git
+            wget http://github.com/testcara/RC_CI/archive/master.zip
+            unzip master.zip
+            export WORKSPACE=`pwd`
+            export PYTHONHTTPSVERIFY=0
 
-          source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
-          source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
-          install_scripts_env
+            source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+            source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+            install_scripts_env
 
-          if [[ "${get_latest_dev_build}" == "true" ]]
-          then
-            et_build_name_or_id=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
-          fi
+            if [[ "${get_latest_dev_build}" == "true" ]]
+            then
+              et_build_name_or_id=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
+              echo $et_build_name_or_id > et_build_name_or_id
+            fi
 
-          RC_CI-master/auto_testing_CI/prepare_et_server_with_rpm_by_ansible.sh
-        '''
+            RC_CI-master/auto_testing_CI/prepare_et_server_with_rpm_by_ansible.sh
+          '''
+        }
+        catch (Exception e){ 
+          sh "echo env.BUILD_URL > test_report_url"
+          sh '''
+          et_build_name_or_id=$(cat et_build_name_or_id)
+          test_report_url=$(cat test_report_url)
+          echo "ET Version/Commit: ${et_build_name_or_id}"
+          echo "Testing Result: FAILED
+          echo "Testing Report URL: ${test_report_url}"
+          '''
+        } //catch  
       } //container
     } // node
   } //pod
