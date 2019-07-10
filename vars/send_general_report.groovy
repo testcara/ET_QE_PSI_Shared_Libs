@@ -12,7 +12,7 @@ def call(String mail_to){
     '''
     def general_summary = sh returnStdout: true, script: '''
     test_log=$(cat test_log)
-    echo $test_log | cut -d "=" -f 20- | cut -d "[" -f 1 | cut -d ',' -f 4- | cut -c 2- | tr -n ','
+    echo $test_log | cut -d "=" -f 20- | cut -d "[" -f 1 | cut -d ',' -f 4- | cut -c 2- | tr -d ','
     '''
     def title = "ET Testing Reports For Build $build_version"
     def report_link = "https://docs.engineering.redhat.com/display/PDT/ET+Testing+Reports+For+Build+$build_version"
