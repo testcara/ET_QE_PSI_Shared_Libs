@@ -16,6 +16,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
 
     String cucumber_report_url = env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
     String cucumber_failure_url = env.BUILD_URL + "cucumber-html-reports/overview-failures.html"
+    String test_report_url = ""
 
     String body = """
     <p style='font-family:arial'>
@@ -106,20 +107,43 @@ def call(String api_username, String api_token, String mail_to, String testing_t
 
     if ("$general_report" =~ "No failures, cheers!"){
         currentResult = 'SUCCESS'
-    }
-    else {
+        test_report_url = cucumber_report_url
+    } else if ("$general_report" =~ "The cucumber report is not available"){
         currentResult = 'FAILED'
+        test_report_url = env.BUILD_URL
+    } else {
+        currentResult = 'FAILED'
+        test_report_url = cucumber_report_url
     }
 
     body = body + general_report
     echo "Body ..."
     echo body
 
+    sh "echo $latestCommitShort > short_commit"
+    sh "echo $testing_type > testing_type"
+    sh "echo $currentResult > current_result"
+    sh "echo $test_report_url > test_report_url"
+    sh '''
+    export short_commit=$(cat short_commit)
+    export testing_type=$(cat testing_type)
+    export current_result=$(cat current_result)
+    export test_report_url=$(cat test_report_url)
+
+    echo "=====================Testing Report: Begin=================="
+    echo "ET Version/Commit: ${commit}"
+    echo "Testing Type: ${testing_type}"
+    echo "Testing Result: ${current_result} 
+    echo "Testing Report URL: ${test_report_url}"
+    echo "=====================Testing Report: End================"
+    '''
+
     echo "Sending mail now ..."
-    String subject = " $currentResult: $env.JOB_NAME#$env.BUILD_NUMBER for Commit $latestCommitShort"
+    String subject = "$currentResult: $env.JOB_NAME#$env.BUILD_NUMBER for Commit $latestCommitShort"
     if (to != null && !to.isEmpty()) {
         // Email on any failures, and on first success.
         mail to: to, subject: subject, body: body, mimeType: "text/html"
         echo 'Sent email notification'
     }
+
 }
