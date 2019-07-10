@@ -120,10 +120,10 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     echo "Body ..."
     echo body
 
-    sh "echo $latestCommit > short_commit"
     sh "echo $testing_type > testing_type"
     sh "echo $currentResult > current_result"
     sh "echo $test_report_url > test_report_url"
+    sh "echo $latestCommit > short_commit"
     sh '''
     sleep 36000
     export short_commit=$(cat short_commit)
