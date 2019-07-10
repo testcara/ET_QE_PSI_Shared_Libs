@@ -43,14 +43,12 @@ def call(String psi_jenkins_username, String psi_jenkins_password, String conflu
           export dev_jenkins_job=$(cat dev_jenkins_job)
           export space=$(cat space)
           export parent_page=$(cat parent_page)
-          export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
 
           echo "===============Download the CI files under $(pwd)=========="
           wget http://github.com/testcara/RC_CI/archive/master.zip
           unzip master.zip
           source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
           source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
-
 
           install_scripts_env
           et_build_version=$(initial_et_build_version ${et_build_name_or_id})
@@ -60,6 +58,7 @@ def call(String psi_jenkins_username, String psi_jenkins_password, String conflu
           fi
 
           title="ET Testing Reports For Build ${et_build_version}"
+          export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
           echo "Collecting all results and generate the report "
           python RC_CI-master/auto_testing_CI/collect_all_reports_and_update_to_confluence_psi.py "${jenkins_username}" "${jenkins_password}" "${confluence_username}" "${confluence_password}" "${et_build_version}" "${title}" "${space}" "${parent_page}"
 
