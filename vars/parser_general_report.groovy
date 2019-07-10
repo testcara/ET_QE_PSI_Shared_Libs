@@ -58,7 +58,7 @@ def call(String confluence_username, String confluence_password, String dev_jenk
           title="ET Testing Reports For Build ${et_build_version}"
           export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
           echo "Parser the reports"
-          python parser_report_results_psi.py ${confluence_username} ${confluence_password} ${et_build_version} "${title}" "${space}"
+          python RC_CI-master/auto_testing_CI/parser_report_results_psi.py ${confluence_username} ${confluence_password} ${et_build_version} "${title}" "${space}"
           '''
         } //container
     } // node
