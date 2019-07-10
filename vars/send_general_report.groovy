@@ -30,12 +30,14 @@ def call(String mail_to){
     echo "Sending mail now ..."
     String subject = "Testing Report for Build-" + build_version + "-" + general_status
     
-    body = '''
+    body = """
+    <p style="font-family:arial">
     <p>ET Version: "$build_version"</p>
     <p>Testing Result: "$general_status"</p>
     <p>Testing Summary: "$general_summary"</p>
     <p>Testing Report: <a href="$report_link">"$title"</a></p>
-    '''
+    </p>
+    """
     
     if (mail_to != null && !mail_to.isEmpty()) {
       // Email on any failures, and on first success.
