@@ -96,7 +96,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     report=""
 
     testing_type=$(cat testing_type)
-    if [[ "${testing_type}" =~ "e2e" ]]
+    if [[ "${testing_type}" =~ "E2E" ]]
     then
       report="<pre>${failed_scenarios_report}</pre>"
     else
