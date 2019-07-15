@@ -31,11 +31,11 @@ def call(String mail_to){
     String subject = "Testing Report for Build-" + build_version + "-" + general_status
     
     body = """
-    <p style="font-family:arial">
-    <p>ET Version: "$build_version"</p>
-    <p>Testing Result: "$general_status"</p>
-    <p>Testing Summary: "$general_summary"</p>
-    <p>Testing Report: <a href="$report_link">"$title"</a></p>
+    <p style='font-family:arial'>
+    <p>ET Version: $build_version</p>
+    <p>Testing Result: $general_status</p>
+    <p>Testing Summary: $general_summary</p>
+    <p>Testing Report: <a href="$report_link">$title</a></p>
     </p>
     """
     
