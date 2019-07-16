@@ -59,7 +59,6 @@ def call(String mail_to, String confluence_username, String confluence_password,
           export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
           echo "Parser the reports"
           python RC_CI-master/auto_testing_CI/parser_report_results_psi.py ${confluence_username} ${confluence_password} ${et_build_version} "${title}" "${space}" >> report
-          pwd
           '''
         String subject = sh returnStdout: true, script: '''
         head -n1 report
