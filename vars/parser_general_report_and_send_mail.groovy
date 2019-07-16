@@ -64,7 +64,7 @@ def call(String mail_to, String confluence_username, String confluence_password,
         head -n1 report
         '''
         String body =  sh returnStdout: true, script: '''
-        tail -n4 report
+        tail -n8 report
         '''
         if (mail_to != null && !mail_to.isEmpty()) {
           echo 'Send mail now ...'
