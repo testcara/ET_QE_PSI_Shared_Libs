@@ -17,7 +17,6 @@ def call(String mail_to, String confluence_username, String confluence_password,
   {
     node(runner) {
       container('et-python2-runner'){
-        String body = ""
         sh "echo $et_build_name_or_id > et_build_name_or_id"
         sh "echo $confluence_username > confluence_username"
         sh "echo $confluence_password > confluence_password"
@@ -62,15 +61,16 @@ def call(String mail_to, String confluence_username, String confluence_password,
           python RC_CI-master/auto_testing_CI/parser_report_results_psi.py ${confluence_username} ${confluence_password} ${et_build_version} "${title}" "${space}" >> report
           pwd
           '''
-        body =  sh returnStdout: true, script: '''
-        pwd
-        cat report
+        String subject = sh returnStdout: true, script: '''
+        head -n1 report
         '''
-        String subject = "testing"
+        String body =  sh returnStdout: true, script: '''
+        tail -n4 report
+        '''
         if (mail_to != null && !mail_to.isEmpty()) {
-          // Email on any failures, and on first success.
+          echo 'Send mail now ...'
           mail to: mail_to, subject: subject, body: body, mimeType: "text/html"
-          echo 'Sent email notification'
+          echo 'Done to sent email notification! Cheers!'
         }
       } //container
     } // node
