@@ -1,22 +1,23 @@
-def call(String confluence_username, String confluence_password, String dev_jenkins_username, String dev_jenkins_password, String dev_jenkins_job='', String et_build_name_or_id="", String space='PDT', String parent_page='56821226'){
+def call(String mail_to, String confluence_username, String confluence_password, String dev_jenkins_username, String dev_jenkins_password, String dev_jenkins_job='', String et_build_name_or_id="", String space='PDT', String parent_page='56821226'){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
   containerTemplate(
-    name: 'et-python2-runner',
-    image: 'docker-registry.upshift.redhat.com/errata-qe-test/et_python2_runner:latest',
-    alwaysPullImage: true,
-    command: 'cat',
-    ttyEnabled: true,
-    envVars: [
-      envVar(key: 'GIT_SSL_NO_VERIFY', value: 'true')
-    ]
+  name: 'et-python2-runner',
+  image: 'docker-registry.upshift.redhat.com/errata-qe-test/et_python2_runner:latest',
+  alwaysPullImage: true,
+  command: 'cat',
+  ttyEnabled: true,
+  envVars: [
+    envVar(key: 'GIT_SSL_NO_VERIFY', value: 'true')
+  ]
 
-    )]
+  )]
   )
   {
     node(runner) {
       container('et-python2-runner'){
+        String body = ""
         sh "echo $et_build_name_or_id > et_build_name_or_id"
         sh "echo $confluence_username > confluence_username"
         sh "echo $confluence_password > confluence_password"
@@ -58,9 +59,20 @@ def call(String confluence_username, String confluence_password, String dev_jenk
           title="ET Testing Reports For Build ${et_build_version}"
           export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
           echo "Parser the reports"
-          python RC_CI-master/auto_testing_CI/parser_report_results_psi.py ${confluence_username} ${confluence_password} ${et_build_version} "${title}" "${space}"
+          python RC_CI-master/auto_testing_CI/parser_report_results_psi.py ${confluence_username} ${confluence_password} ${et_build_version} "${title}" "${space}" >> report
+          pwd
           '''
-        } //container
+        body =  sh returnStdout: true, script: '''
+        pwd
+        cat report
+        '''
+        String subject = "testing"
+        if (mail_to != null && !mail_to.isEmpty()) {
+          // Email on any failures, and on first success.
+          mail to: mail_to, subject: subject, body: body, mimeType: "text/html"
+          echo 'Sent email notification'
+        }
+      } //container
     } // node
   } //pod
 } //call
