@@ -1,4 +1,4 @@
-def call(String et_build_name_or_id, String confluence_username, String confluence_password, String et_fix_version='', String space='PDT', String jira_parent_page='34489277'){
+def call(String et_server, String confluence_username, String confluence_password, String et_build_name_or_id='', String et_fix_version='', String space='PDT', String jira_parent_page='34489277'){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -17,6 +17,7 @@ def call(String et_build_name_or_id, String confluence_username, String confluen
   {
     node(runner) {
       container('et-ansible-runner'){
+    sh "echo $et_server > et_server"
         sh "echo $et_build_name_or_id > et_build_name_or_id"
         sh "echo $confluence_username > confluence_username"
         sh "echo $confluence_password > confluence_password"
@@ -29,6 +30,7 @@ def call(String et_build_name_or_id, String confluence_username, String confluen
           whoami
 
           source /etc/bashrc
+          export et_server=$(cat et_server)
           export et_build_name_or_id=$(cat et_build_name_or_id)
           export confluence_username=$(cat confluence_username)
           export confluence_password=$(cat confluence_password)
@@ -44,10 +46,22 @@ def call(String et_build_name_or_id, String confluence_username, String confluen
 
           et_build_version=""
           install_scripts_env
+          if [[ ${et_build_name_or_id} == "" ]]
+          then
+            echo "If there is no exact version specified, let us get the version directly from the target server."
+            et_build_name_or_id=$(curl http://${et_server}/system_version.txt)
+          fi
           et_build_version=$(initial_et_build_version ${et_build_name_or_id})
+
           title="Bug Regression Reports For Build ${et_build_version}"
 
           cd RC_CI-master/auto_testing_CI
+          if [[ "${et_fix_version}" == "" ]]
+          then
+            echo "There is no exact et_fix_version specified. Let us get the release version from release page"
+            et_fix_version=$(python get_et_fix_version.py ${confluence_username} ${confluence_password})
+          fi
+
           echo "=== generating the bug content ==="
           python generate_confluence_page_for_jira.py ${confluence_username} ${confluence_password} ${et_fix_version}
 
