@@ -51,8 +51,9 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
 
             if [[ "${get_latest_dev_build}" == "true" ]]
             then
-              et_build_name_or_id=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
-              echo $et_build_name_or_id > et_build_name_or_id
+              et_build_id_and_branch=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_target_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
+              echo "${et_build_id_and_branch}" | cut -d " " -f 1 > et_build_name_or_id
+              echo "${et_build_id_and_branch}" | cut -d " " -f 3 > et_branch
             fi
 
             RC_CI-master/auto_testing_CI/prepare_et_server_with_rpm_by_ansible.sh
@@ -62,8 +63,9 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
           sh "echo env.BUILD_URL > test_report_url"
           sh '''
           et_build_name_or_id=$(cat et_build_name_or_id)
+          branch=$(cat et_branch)
           test_report_url=$(cat test_report_url)
-          echo "ET Version/Commit: ${et_build_name_or_id}"
+          echo "ET Version/Commit: ${et_build_name_or_id} of branch ${branch}"
           echo "Testing Result: FAILED
           echo "Testing Report URL: ${test_report_url}"
           '''
