@@ -1,4 +1,4 @@
-def call(String et_server, String et_version, String errata_fetch_brew_build='false', String get_latest_dev_build='false', String dev_jenkins_user='', String dev_jenkins_user_token='', String dev_jenkins_job=''){
+def call(String et_server, String et_version, String errata_fetch_brew_build='false', String get_the_target_build='false', String dev_jenkins_user='', String dev_jenkins_user_token='', String dev_jenkins_job=''){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -20,7 +20,7 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
         sh "echo $et_server > et_server"
         sh "echo $et_version > et_version"
         sh "echo $errata_fetch_brew_build > errata_fetch_brew_build"
-        sh "echo $get_latest_dev_build > get_latest_dev_build"
+        sh "echo $get_the_target_build > get_the_target_build"
         sh "echo $dev_jenkins_job > dev_jenkins_job"
         sh "echo $dev_jenkins_user > dev_jenkins_user"
         sh "echo $dev_jenkins_user_token > dev_jenkins_user_token"
@@ -35,7 +35,7 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
             export ET_Testing_Server=$(cat et_server)
             export et_build_name_or_id=$(cat et_version)
             export errata_fetch_brew_build=$(cat errata_fetch_brew_build)
-            export get_latest_dev_build=$(cat get_latest_dev_build)
+            export get_the_target_build=$(cat get_the_target_build)
             export dev_jenkins_job=$(cat dev_jenkins_job)
 
             git config --global http.sslVerify false
@@ -49,7 +49,7 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
             source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
             install_scripts_env
 
-            if [[ "${get_latest_dev_build}" == "true" ]]
+            if [[ "${get_the_target_build}" == "true" ]]
             then
               et_build_id_and_branch=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_target_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
               echo "${et_build_id_and_branch}" | cut -d " " -f 1 > et_build_name_or_id
