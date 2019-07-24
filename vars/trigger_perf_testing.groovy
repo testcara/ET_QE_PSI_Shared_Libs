@@ -1,4 +1,4 @@
-def call(String perf_username, String perf_user_token, String et_build_name_or_id, String perf_expect_run_time, String baseline_job_id){
+def call(String perf_username, String perf_user_token, String et_build_name_or_id, String perf_expect_run_time, String baseline_job_id, String et_server='errata-stage-perf.host.stage.eng.bos.redhat.com'){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -42,6 +42,11 @@ def call(String perf_username, String perf_user_token, String et_build_name_or_i
 
           et_build_version=""
           install_scripts_env
+          if [[ ${et_build_name_or_id} == "" ]]
+          then
+            echo "If there is no exact version specified, let us get the version directly from the target server."
+            et_build_name_or_id=$(curl http://${et_server}/system_version.txt)
+          fi
           et_build_version=$(initial_et_build_version ${et_build_name_or_id})
 
           cd RC_CI-master/auto_testing_CI
