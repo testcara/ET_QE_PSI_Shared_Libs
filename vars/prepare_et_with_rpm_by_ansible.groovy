@@ -52,6 +52,11 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
             if [[ "${get_the_target_build}" == "true" ]]
             then
               et_build_id_and_branch=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_target_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
+              if [[ ${et_build_id_and_branch} =~ 'There is no [success] builds today' ]]
+              then
+                echo "There is no build today, Let us ignore the environment preparation."
+                exit 0
+              fi
               echo "${et_build_id_and_branch}" | cut -d " " -f 1 > et_build_name_or_id
               echo "${et_build_id_and_branch}" | cut -d " " -f 3 > et_branch
             fi
