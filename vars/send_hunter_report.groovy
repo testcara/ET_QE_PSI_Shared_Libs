@@ -1,10 +1,18 @@
-def call(String api_username, String api_token, String mail_to, String testing_type = '') {
+def call(String api_username, String api_token, String mail_to, String testing_type = '', String current_branch='') {
     String to = mail_to
     String currentResult = ""
-    String pwd_test = sh(returnStdout: true, script: 'pwd && ls -al')
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
     String branch = sh(returnStdout: true, script: 'git branch | grep \'*\' | cut -d " " -f 2')
+    if (testing_type=="E2E Testing") {
+       branch = current_branch
+       latestCommit = sh returnStdout: true, script: '''
+       git clone https://code.engineering.redhat.com/gerrit/errata-rails
+       cd errata-rails && git checkout $(cat current_branch)
+       commit=$(git rev-parse HEAD)
+       echo $commit
+       '''
+    }
 
     def causes = currentBuild.rawBuild.getCauses()
     // E.g. 'started by user', 'triggered by scm change'
@@ -14,7 +22,6 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     }
 
     causes = null
-
 
     String cucumber_report_url = env.BUILD_URL + "/cucumber-html-reports/overview-features.html"
     String cucumber_failure_url = env.BUILD_URL + "cucumber-html-reports/overview-failures.html"
@@ -126,16 +133,13 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     sh "echo $testing_type > testing_type"
     sh "echo $currentResult > current_result"
     sh "echo $test_report_url > test_report_url"
-    sh "echo $pwd_test > pwd_test"
     sh '''
-    export pwd_test=$(cat pwd_test)
     export commit=$(cat commit)
     export testing_type=$(cat testing_type)
     export current_result=$(cat current_result)
     export test_report_url=$(cat test_report_url)
 
     echo "=====================Testing Report: Begin=================="
-    echo "pwd: ${pwd_test}"
     echo "ET Version/Commit: ${commit}"
     echo "Testing Type: ${testing_type}"
     echo "Testing Result: ${current_result}"
@@ -150,5 +154,4 @@ def call(String api_username, String api_token, String mail_to, String testing_t
         mail to: to, subject: subject, body: body, mimeType: "text/html"
         echo 'Sent email notification'
     }
-
 }
