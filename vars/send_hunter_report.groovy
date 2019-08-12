@@ -1,14 +1,16 @@
-def call(String api_username, String api_token, String mail_to, String testing_type = '', String current_branch='') {
+def call(String api_username, String api_token, String mail_to, String testing_type = '', String branch = '') {
     String to = mail_to
-    String currentResult = ""
+    String currentResult = ''
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
-    String branch = 'develop'
-    if (current_branch!='') {
-       branch = current_branch
+    if (branch != '') {
        sh "echo $branch > current_branch"
        latestCommit = sh returnStdout: true, script: '''
-       cd errata-rails && git checkout $(cat current_branch)
+       if [[ -d 'errata-rails' ]]
+	   then
+         cd errata-rails
+       fi
+       git checkout $(cat current_branch)
        commit=$(git rev-parse HEAD)
        echo $commit
        '''
