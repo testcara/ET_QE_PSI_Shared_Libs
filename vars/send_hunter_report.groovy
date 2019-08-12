@@ -4,6 +4,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     String pwd_test = sh(returnStdout: true, script: 'pwd && ls -al')
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
+    String branch = sh(returnStdout: true, script: 'git branch | grep \'*\' | cut -d " " -f 2')
 
     def causes = currentBuild.rawBuild.getCauses()
     // E.g. 'started by user', 'triggered by scm change'
@@ -121,7 +122,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     echo "Body ..."
     echo body
 
-    sh "echo \"$latestCommit\" > commit"
+    sh "echo \"$latestCommit($branch)\" > commit"
     sh "echo $testing_type > testing_type"
     sh "echo $currentResult > current_result"
     sh "echo $test_report_url > test_report_url"
