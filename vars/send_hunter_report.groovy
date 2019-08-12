@@ -3,8 +3,8 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     String currentResult = ""
     String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
-    String branch = sh(returnStdout: true, script: 'git branch | grep \'*\' | cut -d " " -f 2')
-    if (testing_type=="E2E Testing") {
+    String branch = 'develop'
+    if (current_branch!='') {
        branch = current_branch
        sh "echo $branch > current_branch"
        latestCommit = sh returnStdout: true, script: '''
