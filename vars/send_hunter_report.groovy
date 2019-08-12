@@ -6,8 +6,8 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     String branch = sh(returnStdout: true, script: 'git branch | grep \'*\' | cut -d " " -f 2')
     if (testing_type=="E2E Testing") {
        branch = current_branch
+       sh "echo $branch > current_branch"
        latestCommit = sh returnStdout: true, script: '''
-       git clone https://code.engineering.redhat.com/gerrit/errata-rails
        cd errata-rails && git checkout $(cat current_branch)
        commit=$(git rev-parse HEAD)
        echo $commit
