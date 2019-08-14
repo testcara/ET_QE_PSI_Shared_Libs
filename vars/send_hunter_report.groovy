@@ -1,21 +1,25 @@
 def call(String api_username, String api_token, String mail_to, String testing_type = '', String branch = '') {
     String to = mail_to
     String currentResult = ''
-    String latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
-    String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
+    String latestCommit = ''
     if (branch != '') {
        sh "echo $branch > current_branch"
        latestCommit = sh returnStdout: true, script: '''
        if [[ -d 'errata-rails' ]]
-	   then
+       then
          cd errata-rails
        fi
-       git checkout $(cat current_branch)
+       # Without >> /dev/null, the output of this step makes the latestCommit contain some unexpected strings
+       git checkout $(cat current_branch) >> /dev/null
        commit=$(git rev-parse HEAD)
        echo $commit
        '''
+       echo "$latestCommit"
+    } else {
+      latestCommit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     }
 
+    String latestCommitShort = sh(returnStdout: true, script: 'git rev-parse HEAD | cut -c 1-10')
     def causes = currentBuild.rawBuild.getCauses()
     // E.g. 'started by user', 'triggered by scm change'
     def cause = null
