@@ -4,7 +4,7 @@ def call(String pubServer, String pulpServer, String pulpDockerServer) {
         containers: [
             containerTemplate(
                 name: 'qe-pub-pulp-testing-runner',
-                    image: 'docker-registry.upshift.redhat.com/errata-qe-test/qe_testing_psi_pub_runner:latest',
+                    image: 'docker-registry.upshift.redhat.com/errata-qe-test/et_python2_runner:latest',
                         command: 'cat',
                         ttyEnabled: true,
                         alwaysPullImage: true,
