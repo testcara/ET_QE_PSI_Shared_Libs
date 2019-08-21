@@ -90,6 +90,7 @@ def call(String token, String appName, String templateNameofET, String templateN
             } //retry
           } //container
         } //stage
+    /* We do not need to build mysql app every time.
         stage('build mysql app'){
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
@@ -98,6 +99,7 @@ def call(String token, String appName, String templateNameofET, String templateN
             } //retry
           } //container
         } //stage
+    */
         stage('deploy mysql app'){
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
