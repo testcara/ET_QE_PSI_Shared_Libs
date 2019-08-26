@@ -34,12 +34,33 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
 
             container('qe-pub-pulp-testing-runner') {
             sh '''git config --global http.sslVerify false'''
-            sh "echo "
+
             git 'https://gitlab.infra.prod.eng.rdu2.redhat.com/yuzheng/ansible-pub-qe.git'
+
+            sh "echo $pub_server > pub_server"
+            sh "echo $pulp_rpm_server > pulp_rpm_server"
+            sh "echo $pulp_docker_server > pulp_docker_server"
+            sh "echo $pub_jenkins_build > pub_jenkins_build"
+            sh "echo $pulp_build_for_rpm > pulp_build_for_rpm"
+            sh "echo $pulp_rpm_build > pulp_rpm_build"
+            sh "echo $pulp_cdn_distributor_build > pulp_cdn_distributor_build"
+            sh "echo $pulp_build_for_docker > pulp_build_for_docker"
+            sh "echo $pulp_docker_build > pulp_docker_build"
+
             sh '''
             wget http://github.com/testcara/RC_CI/archive/master.zip
             unzip master.zip
             cd RC_CI-master/auto_testing_CI/
+            export pub_server=$(cat pub_server)
+            export pulp_rpm_server=$(cat pulp_rpm_server)
+            export pulp_docker_server=$(cat pulp_docker_server)
+            export pub_jenkins_build=$(cat pub_jenkins_build)
+            export pulp_build_for_rpm=$(cat pulp_build_for_rpm)
+            export pulp_rpm_build=$(cat pulp_rpm_build)
+            export pulp_cdn_distributor_build=$(cat pulp_cdn_distributor_build)
+            export pulp_build_for_docker=$(cat pulp_build_for_docker)
+            export pulp_docker_build=$(cat pulp_docker_build)
+
             echo ${WORKSPACE}
             export CI3_WORKSPACE="${WORKSPACE}"
             sleep 3600
