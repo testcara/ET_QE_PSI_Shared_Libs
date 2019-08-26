@@ -1,7 +1,6 @@
 def call(String pubServer, String pulpServer, String pulpDockerServer, String pubJenkinsBuild="", String pulpBuildForRPM="", String pulpRPMBuild="",
     String pulpCDNDistributorBuild="", String pulpBuildForDocker="", String pulpDockerBuild=""){
 
- params.pub_jenkins_build, params.pulp_build_for_rpm, params.pulp_rpm_build, params.pulp_cdn_distributor_build, params.pulp_build_for_docker, params.pulp_docker_build
     def runner_1 = "mypod-${UUID.randomUUID().toString()}"
     podTemplate(label: runner_1,
         containers: [
