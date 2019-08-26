@@ -48,24 +48,26 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
             sh "echo $pulp_docker_build > pulp_docker_build"
 
             sh '''
+            user_id=$(id | cut -d " " -f 1 | cut -d "=" -f 2 | tr -d ' ')
+            echo "default:x:${user_id}:0::/home/jenkins:/bin/bash" >> /etc/passwd
+
             wget http://github.com/testcara/RC_CI/archive/master.zip
             unzip master.zip
-            cd RC_CI-master/auto_testing_CI/
-            export pub_server=$(cat pub_server)
-            export pulp_rpm_server=$(cat pulp_rpm_server)
-            export pulp_docker_server=$(cat pulp_docker_server)
-            export pub_jenkins_build=$(cat pub_jenkins_build)
-            export pulp_build_for_rpm=$(cat pulp_build_for_rpm)
-            export pulp_rpm_build=$(cat pulp_rpm_build)
-            export pulp_cdn_distributor_build=$(cat pulp_cdn_distributor_build)
-            export pulp_build_for_docker=$(cat pulp_build_for_docker)
-            export pulp_docker_build=$(cat pulp_docker_build)
 
-            echo ${WORKSPACE}
             export CI3_WORKSPACE="${WORKSPACE}"
-            sleep 3600
+            export pub_server=$(cat ${CI3_WORKSPACE}/pub_server)
+            export pulp_rpm_server=$(cat ${CI3_WORKSPACE}/pulp_rpm_server)
+            export pulp_docker_server=$(cat ${CI3_WORKSPACE}/pulp_docker_server)
+            export pub_jenkins_build=$(cat ${CI3_WORKSPACE}/pub_jenkins_build)
+            export pulp_build_for_rpm=$(cat ${CI3_WORKSPACE}/pulp_build_for_rpm)
+            export pulp_rpm_build=$(cat ${CI3_WORKSPACE}/pulp_rpm_build)
+            export pulp_cdn_distributor_build=$(cat ${CI3_WORKSPACE}/pulp_cdn_distributor_build)
+            export pulp_build_for_docker=$(cat ${CI3_WORKSPACE}/pulp_build_for_docker)
+            export pulp_docker_build=$(cat ${CI3_WORKSPACE}/pulp_docker_build)
+
+            cd RC_CI-master/auto_testing_CI/
             ./upgrade_pub_pulp_psi.sh
-            ./prepare_pulp_pulp_db_and_services.sh
+            #./prepare_pulp_pulp_db_and_services.sh
             '''
             }
         }
