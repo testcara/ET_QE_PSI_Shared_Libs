@@ -47,19 +47,17 @@ def call(String APIUsername, String APIToken, String TS2PostMergePipeline, Strin
           python RC_CI-master/auto_testing_CI/compare_cucumber_reports.py "${APIUsername}" "${APIToken}" "${JENKINS_URL}" \
            "${TS2PostMergePipeline}" "${current_cucumber_report}"
           '''
-      String subject = "Feature Monitoring Report"
-      String body = result
-      body = body + $BUILD_URL
+        String subject = "Feature Monitoring Report"
+        String body = result
+        body = body + "$BUILD_URL"
 
-      if ( "$result" =~ "Success" ){
-
-      }else{
-        if (MailTo != null && !MailTo.isEmpty()) {
-          // Email on any failures, and on first success.
-          mail to: to, subject: subject, body: body, mimeType: "text/html"
-          echo 'Sent email notification'
-      }
-
+        if ("$result" =~ "Attention"){
+          if (MailTo != null && !MailTo.isEmpty()) {
+            // Email on any failures, and on first success.
+            mail to: to, subject: subject, body: body, mimeType: "text/html"
+            echo 'Sent email notification'
+          }
+        } //if
       } //container
     } // node
   } //pod
