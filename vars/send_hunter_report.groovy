@@ -11,7 +11,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
        fi
        # Without >> /dev/null, the output of this step makes the latestCommit contain some unexpected strings
        git checkout $(cat current_branch) >> /dev/null
-       git pull >> /dev/null
+       git pull || true >> /dev/null
        commit=$(git rev-parse HEAD)
        echo $commit
        '''
