@@ -1,7 +1,7 @@
 def call(String APIUsername, String APIToken, String TS2PostMergePipeline, String MailTo){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   String to = MailTo
-  String current_cucumber_report = ${BUILD_URL} + "cucumber-html-reports/overview-features.html"
+  String current_cucumber_report = "${BUILD_URL}" + "cucumber-html-reports/overview-features.html"
 
   podTemplate(label: runner,
   containers: [
