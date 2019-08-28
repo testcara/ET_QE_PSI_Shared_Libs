@@ -1,5 +1,6 @@
 def call(String APIUsername, String APIToken, String TS2PostMergePipeline, String MailTo){
   def runner = "mypod-${UUID.randomUUID().toString()}"
+  String to = MailTo
   String current_cucumber_report = ${BUILD_URL} + "cucumber-html-reports/overview-features.html"
 
   podTemplate(label: runner,
@@ -52,12 +53,14 @@ def call(String APIUsername, String APIToken, String TS2PostMergePipeline, Strin
         body = body + "$BUILD_URL"
 
         if ("$result" =~ "Attention"){
-          if (MailTo != null && !MailTo.isEmpty()) {
+          subject = subject + ": ATTENTION!"
+          if (to != null && !to.isEmpty()) {
             // Email on any failures, and on first success.
             mail to: to, subject: subject, body: body, mimeType: "text/html"
             echo 'Sent email notification'
           }
-        } //if
+
+        }
       } //container
     } // node
   } //pod
