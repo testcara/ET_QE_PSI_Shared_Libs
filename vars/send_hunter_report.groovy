@@ -8,6 +8,9 @@ def call(String api_username, String api_token, String mail_to, String testing_t
        if [[ -d 'errata-rails' ]]
        then
          cd errata-rails
+       else
+         git clone https://code.engineering.redhat.com/gerrit/errata-rails
+         cd errata-rails
        fi
        # Without >> /dev/null, the output of this step makes the latestCommit contain some unexpected strings
        git checkout $(cat current_branch) >> /dev/null
@@ -141,7 +144,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     sh "echo $currentResult > current_result"
     sh "echo $test_report_url > test_report_url"
     sh '''
-    export commit=$(cat commit)
+    export commit=$(cat commit | sed -i "s/Already up-to-date.//g" | xargs)
     export testing_type=$(cat testing_type)
     export current_result=$(cat current_result)
     export test_report_url=$(cat test_report_url)
