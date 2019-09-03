@@ -5,6 +5,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     if (branch != '') {
        sh "echo $branch > current_branch"
        latestCommit = sh returnStdout: true, script: '''
+       current_branch=$(cat current_branch)
        if [[ -d 'errata-rails' ]]
        then
          cd errata-rails
@@ -13,7 +14,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
          cd errata-rails
        fi
        # Without >> /dev/null, the output of this step makes the latestCommit contain some unexpected strings
-       git checkout $(cat current_branch) >> /dev/null
+       git checkout $current_branch >> /dev/null
        git pull || true >> /dev/null
        commit=$(git rev-parse HEAD)
        echo $commit
