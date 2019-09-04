@@ -3,8 +3,11 @@ def call(String api_username, String api_token, String mail_to, String testing_t
     String currentResult = ''
     String latestCommit = ''
     if (branch != '') {
+       def workspace = pwd()
+       echo "$workspace"
        sh "echo $branch > current_branch"
        latestCommit = sh returnStdout: true, script: '''
+       pwd
        current_branch=$(cat current_branch)
        if [[ -d 'errata-rails' ]]
        then
