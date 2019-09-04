@@ -49,7 +49,7 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
 
             sh '''
             user_id=$(id | cut -d " " -f 1 | cut -d "=" -f 2 | tr -d ' ')
-            echo "default:x:${user_id}:0::/home/jenkins:/bin/bash" >> /etc/passwd
+            echo "jenkins:x:${user_id}:0::/home/jenkins:/bin/bash" >> /etc/passwd
 
             wget http://github.com/testcara/RC_CI/archive/master.zip
             unzip master.zip
