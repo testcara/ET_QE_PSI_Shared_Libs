@@ -12,7 +12,7 @@ def call(String api_username, String api_token, String mail_to, String testing_t
        then
          cd errata-rails
        else
-         git clone https://code.engineering.redhat.com/gerrit/errata-rails
+         git clone https://code.engineering.redhat.com/gerrit/errata-rails >> /dev/null
          cd errata-rails
        fi
        # Without >> /dev/null, the output of this step makes the latestCommit contain some unexpected strings
