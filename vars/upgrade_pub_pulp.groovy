@@ -1,5 +1,4 @@
-def call(String pubServer, String pulpServer, String pulpDockerServer, String pubJenkinsBuild="", String pulpBuildForRPM="", String pulpRPMBuild="",
-    String pulpCDNDistributorBuild="", String pulpBuildForDocker="", String pulpDockerBuild=""){
+def call(String pubServer, String pulpServer, String pulpDockerServer, String pubJenkinsBuild="", String pulpBuildForRPM="", String pulpRPMBuild="", String pulpBuildForDocker="", String pulpDockerBuild=""){
 
     def runner_1 = "mypod-${UUID.randomUUID().toString()}"
     podTemplate(label: runner_1,
@@ -25,7 +24,6 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
                      string(name: 'pub_jenkins_build', defaultValue: pubJenkinsBuild),
                      string(name: 'pulp_build_for_rpm', defaultValue: pulpBuildForRPM),
                      string(name: 'pulp_rpm_build', defaultValue: pulpRPMBuild),
-                     string(name: 'pulp_cdn_distributor_build', defaultValue: pulpCDNDistributorBuild),
                      string(name: 'pulp_build_for_docker', defaultValue: pulpBuildForDocker),
                      string(name: 'pulp_docker_build', defaultValue: pulpDockerBuild)
                      ]
@@ -43,7 +41,6 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
             sh "echo $pub_jenkins_build > pub_jenkins_build"
             sh "echo $pulp_build_for_rpm > pulp_build_for_rpm"
             sh "echo $pulp_rpm_build > pulp_rpm_build"
-            sh "echo $pulp_cdn_distributor_build > pulp_cdn_distributor_build"
             sh "echo $pulp_build_for_docker > pulp_build_for_docker"
             sh "echo $pulp_docker_build > pulp_docker_build"
 
@@ -60,7 +57,6 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
             export pub_jenkins_build=$(cat ${CI3_WORKSPACE}/pub_jenkins_build)
             export pulp_build_for_rpm=$(cat ${CI3_WORKSPACE}/pulp_build_for_rpm)
             export pulp_rpm_build=$(cat ${CI3_WORKSPACE}/pulp_rpm_build)
-            export pulp_cdn_distributor_build=$(cat ${CI3_WORKSPACE}/pulp_cdn_distributor_build)
             export pulp_build_for_docker=$(cat ${CI3_WORKSPACE}/pulp_build_for_docker)
             export pulp_docker_build=$(cat ${CI3_WORKSPACE}/pulp_docker_build)
 
