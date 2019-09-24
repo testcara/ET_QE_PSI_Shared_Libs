@@ -51,6 +51,7 @@ def call(String perf_username, String perf_user_token, String et_build_name_or_i
 
           cd RC_CI-master/auto_testing_CI
           echo "=== Trigger performance testing ==="
+          export PYTHONHTTPSVERIFY=0
           python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_id} ${et_build_version}
           '''
         } //container
