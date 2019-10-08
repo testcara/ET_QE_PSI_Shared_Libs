@@ -74,8 +74,8 @@ def call(String token, String appName, String templateNameofET, String templateN
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               echo "app-name:${appName}-mariadb-102-rhel7"
-              String appParameters=""
-                create_apps_by_new_app_with_oc(token, "${appName}-mariadb-102-rhel7", mysqlAppParameters, mysqlImageRepo)
+              echo "${mysqlAppParameters}"
+              create_apps_by_new_app_with_oc(token, "${appName}-mariadb-102-rhel7", mysqlAppParameters, mysqlImageRepo)
             } //retry
           } //container
         } //stage
