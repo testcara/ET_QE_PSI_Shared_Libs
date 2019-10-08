@@ -6,7 +6,7 @@ def call(String token, String appName, String templateNameofET, String templateN
   echo "---> Now, you are using the ET pipeline shared lib ..."
 
   def RUN_USER = '1058980001'
-  def MYSQL_USER = "root"
+  def MYSQL_USER = "errata"
   def MYSQL_PASSWORD = "arNdk123_"
   def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
   def runner= "mypod-${UUID.randomUUID().toString()}"
