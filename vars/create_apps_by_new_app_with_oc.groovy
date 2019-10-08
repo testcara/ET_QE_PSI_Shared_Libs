@@ -8,6 +8,7 @@ def call(String token, String appName, String appParameters, String repoImage){
 	    	app_name=$(cat appName)
 	    	repoImage=$(cat repoImage)
 	    	appParameters=$(cat appParameters)
+		echo oc new-app --name=${app_name} ${appParameters} ${repoImage}
 	    	oc new-app --name=${app_name} ${appParameters} ${repoImage}
 	    	'''
 		} //project
