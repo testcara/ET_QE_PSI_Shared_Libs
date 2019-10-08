@@ -13,7 +13,7 @@ def call(String token, String appName, String templateNameofET, String templateN
   etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
   def FAILED_STAGE
   def MYSQL_DATABASE = 'errata'
-  def mysqlAppParameters=" -e MYSQL_USER=" + MYSQL_USER + " -e MYSQL_PASSWORD=" + MYSQL_PASSWORD + " -e MYSQL_DATABASE=" + MYSQL_DATABASE
+  def mysqlAppParameters="MYSQL_USER=" + MYSQL_USER + " -e MYSQL_PASSWORD=" + MYSQL_PASSWORD + " -e MYSQL_DATABASE=" + MYSQL_DATABASE
   def mysqlImageRepo="registry.access.redhat.com/rhscl/mariadb-102-rhel7"
 
 
