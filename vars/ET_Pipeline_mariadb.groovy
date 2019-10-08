@@ -6,12 +6,13 @@ def call(String token, String appName, String templateNameofET, String templateN
   echo "---> Now, you are using the ET pipeline shared lib ..."
 
   def RUN_USER = '1058980001'
-  def MSYQL_USER = "root"
+  def MYSQL_USER = "root"
   def MYSQL_PASSWORD = "arNdk123_"
   def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
   def runner= "mypod-${UUID.randomUUID().toString()}"
   etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
   def FAILED_STAGE
+  def MYSQL_DATABASE = 'errata'
   def mysqlAppParameters="-e MYSQL_USER=" + MYSQL_USER + " -e MYSQL_PASSWORD=" + MYSQL_PASSWORD + "-e MYSQL_DATABASE=" + MYSQL_DATABASE
   def mysqlImageRepo="registry.access.redhat.com/rhscl/mariadb-102-rhel7"
 
