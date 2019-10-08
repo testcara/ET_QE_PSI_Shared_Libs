@@ -120,7 +120,7 @@ def call(String token, String appName, String templateNameofET, String templateN
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
-                    import_sql_files_to_db(token, mysqlPod, DB_FILE, MSYQL_USER, MYSQL_PASSWORD)
+                    import_sql_files_to_db(token, mysqlPod, DB_FILE, MYSQL_USER, MYSQL_PASSWORD)
                     def db_migration_cmd = "bundle exec rake db:migrate"
                     run_cmd_against_pod(token, etPod, db_migration_cmd)
 
