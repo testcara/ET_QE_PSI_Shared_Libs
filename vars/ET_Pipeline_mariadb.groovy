@@ -7,7 +7,7 @@ def call(String token, String appName, String templateNameofET, String templateN
 
   def RUN_USER = '1058980001'
   def MYSQL_USER = "errata"
-  def MYSQL_PASSWORD = "arNdk123_"
+  def MYSQL_PASSWORD = "errata"
   def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
   def runner= "mypod-${UUID.randomUUID().toString()}"
   etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
