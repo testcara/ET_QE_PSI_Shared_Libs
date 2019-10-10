@@ -6,12 +6,16 @@ def call(String token, String appName, String templateNameofET, String templateN
   echo "---> Now, you are using the ET pipeline shared lib ..."
 
   def RUN_USER = '1058980001'
-  def MSYQL_USER = "root"
-  def MYSQL_PASSWORD = "arNdk123_"
+  def MYSQL_USER = "errata"
+  def MYSQL_PASSWORD = "errata"
   def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
   def runner= "mypod-${UUID.randomUUID().toString()}"
   etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
   def FAILED_STAGE
+  def MYSQL_DATABASE = 'errata'
+  def mysqlAppParameters="MYSQL_USER=" + MYSQL_USER + " -e MYSQL_ROOT_PASSWORD="+ MYSQL_PASSWORD + " -e MYSQL_PASSWORD=" + MYSQL_PASSWORD + " -e MYSQL_DATABASE=" + MYSQL_DATABASE
+  def mysqlImageRepo="registry.access.redhat.com/rhscl/mariadb-102-rhel7"
+
 
   podTemplate(label: runner,
   containers: [
@@ -41,7 +45,7 @@ def call(String token, String appName, String templateNameofET, String templateN
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
-              [appName, "${appName}-mysql"].each {
+              [appName, "${appName}-mariadb-102-rhel7"].each {
                 if(parallel=="true"){
                   clean_up_by_oc(token, it, 'app')
                 } else{
@@ -56,10 +60,8 @@ def call(String token, String appName, String templateNameofET, String templateN
             container('qe-testing-runner'){
               script { FAILED_STAGE=env.STAGE_NAME }
               retry(2) {
-                [templateNameofET, templateNameofMysql].each {
-                  clean_up(token, it, 'template')
-                } //each
-                upload_templates(token, templatePathofET, templatePathofMysql)
+                clean_up(token, templateNameofET, 'template')
+                upload_templates(token, templatePathofET)
               } //retry
             } //container
           } //stage
@@ -69,12 +71,9 @@ def call(String token, String appName, String templateNameofET, String templateN
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
-              echo "app-name:${appName}-mysql "
-              if(parallel=="true"){
-                create_apps_by_oc(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
-              } else{
-                create_apps(token, "${appName}-mysql", templateNameofMysql, mysqlTemplateParameters)
-              } //if
+              echo "app-name:${appName}-mariadb-102-rhel7"
+              echo "${mysqlAppParameters}"
+              create_apps_by_new_app_with_oc(token, "${appName}-mariadb-102-rhel7", mysqlAppParameters, mysqlImageRepo)
             } //retry
           } //container
         } //stage
@@ -83,28 +82,10 @@ def call(String token, String appName, String templateNameofET, String templateN
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               if(parallel=="true"){
-                create_apps_by_oc(token, appName, templateNameofET, etTemplateParameters)
+                create_apps_by_template_with_oc(token, appName, templateNameofET, etTemplateParameters)
               } else{
-                create_apps(token, appName, templateNameofET, etTemplateParameters)
+                create_apps_by_template_without_oc(token, appName, templateNameofET, etTemplateParameters)
               }
-            } //retry
-          } //container
-        } //stage
-    /* We do not need to build mysql app every time.
-        stage('build mysql app'){
-          container('qe-testing-runner'){
-            script { FAILED_STAGE=env.STAGE_NAME }
-            retry(2) {
-              build_bc_and_track_build_by_oc(token, 20, "${appName}-mysql")
-            } //retry
-          } //container
-        } //stage
-    */
-        stage('deploy mysql app'){
-          container('qe-testing-runner'){
-            script { FAILED_STAGE=env.STAGE_NAME }
-            retry(2) {
-              deploy_dc_and_track_deployment_by_oc(token, 5, "${appName}-mysql")
             } //retry
           } //container
         } //stage
@@ -129,7 +110,7 @@ def call(String token, String appName, String templateNameofET, String templateN
               container('qe-testing-runner'){
                 script { FAILED_STAGE=env.STAGE_NAME }
                 retry(2) {
-                    def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | grep -v deploy |cut -d ' ' -f 1"
+                    def cmd1="oc get pods | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
                     echo "Got mysqlPod: ${mysqlPod}"
 
@@ -137,7 +118,7 @@ def call(String token, String appName, String templateNameofET, String templateN
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
-                    import_sql_files_to_db(token, mysqlPod, DB_FILE, MSYQL_USER, MYSQL_PASSWORD)
+                    import_sql_files_to_db(token, mysqlPod, DB_FILE, MYSQL_USER, MYSQL_PASSWORD)
                     def db_migration_cmd = "bundle exec rake db:migrate"
                     run_cmd_against_pod(token, etPod, db_migration_cmd)
 
@@ -190,6 +171,15 @@ def call(String token, String appName, String templateNameofET, String templateN
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
         clean_ws()
+        retry(2) {
+          [appName, "${appName}-mariadb-102-rhel7"].each {
+            if(parallel=="true"){
+              clean_up_by_oc(token, it, 'app')
+            } else{
+              clean_up(token, it, 'app')
+            } //if
+          } //each
+        } //retry
       } // finally
     } //node
   } //container
