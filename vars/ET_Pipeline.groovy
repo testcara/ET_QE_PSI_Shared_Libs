@@ -101,7 +101,7 @@ def call(String token, String appName, String templateNameofET, String templateN
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
-              deploy_dc_and_track_deployment_by_oc(token, 5, "${appName}-rails")
+              deploy_dc_and_track_deployment_by_oc(token, 10, "${appName}-rails")
             } //retry
           } //container
         } //stage
