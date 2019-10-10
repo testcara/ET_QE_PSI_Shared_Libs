@@ -173,6 +173,15 @@ def call(String token, String appName, String templateNameofET, String templateN
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
         clean_ws()
+        retry(2) {
+          [appName, "${appName}-mariadb-102-rhel7"].each {
+            if(parallel=="true"){
+              clean_up_by_oc(token, it, 'app')
+            } else{
+              clean_up(token, it, 'app')
+            } //if
+          } //each
+        } //retry
       } // finally
     } //node
   } //container
