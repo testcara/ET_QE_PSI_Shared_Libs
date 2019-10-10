@@ -75,6 +75,10 @@ def call(String token, String appName, String templateNameofET, String templateN
               echo "${mysqlAppParameters}"
               create_apps_by_new_app_with_oc(token, "${appName}-mariadb-102-rhel7", mysqlAppParameters, mysqlImageRepo)
             } //retry
+            retry(2){
+              // We would wait 5 mins to make sure its deployed succesfully
+              track_deployment(token, "${appName}-mariadb-102-rhel7")
+            }
           } //container
         } //stage
         stage('create et app'){
@@ -101,7 +105,7 @@ def call(String token, String appName, String templateNameofET, String templateN
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
-              deploy_dc_and_track_deployment_by_oc(token, 5, "${appName}-rails")
+              deploy_dc_and_track_deployment_by_oc(token, 10, "${appName}-rails")
             } //retry
           } //container
         } //stage
@@ -110,11 +114,11 @@ def call(String token, String appName, String templateNameofET, String templateN
               container('qe-testing-runner'){
                 script { FAILED_STAGE=env.STAGE_NAME }
                 retry(2) {
-                    def cmd1="oc get pods | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy |cut -d ' ' -f 1"
+                    def cmd1="oc get pods | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
                     echo "Got mysqlPod: ${mysqlPod}"
 
-                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | grep -v deploy | cut -d ' ' -f 1"
+                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
@@ -171,16 +175,18 @@ def call(String token, String appName, String templateNameofET, String templateN
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
         clean_ws()
-        retry(2) {
-          [appName, "${appName}-mariadb-102-rhel7"].each {
-            if(parallel=="true"){
-              clean_up_by_oc(token, it, 'app')
-            } else{
-              clean_up(token, it, 'app')
-            } //if
-          } //each
-        } //retry
+        container('qe-testing-runner'){
+          retry(2) {
+            [appName, "${appName}-mariadb-102-rhel7"].each {
+              if(parallel=="true"){
+                clean_up_by_oc(token, it, 'app')
+              } else{
+                clean_up(token, it, 'app')
+              } //if
+            } //each
+          } //retry
+        } //container
       } // finally
     } //node
-  } //container
+  } //containerTemplate
 }
