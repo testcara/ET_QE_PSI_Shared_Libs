@@ -19,6 +19,10 @@ def call(String token, String dcName){
                   exit 1
                 else
                   echo "---> Still running ..."
+                  if [[ $i -eq 5 ]]
+                  then
+                    exit 1
+                  fi
                 fi
             done
            '''
