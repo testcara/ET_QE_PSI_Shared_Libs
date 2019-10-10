@@ -60,10 +60,8 @@ def call(String token, String appName, String templateNameofET, String templateN
             container('qe-testing-runner'){
               script { FAILED_STAGE=env.STAGE_NAME }
               retry(2) {
-                [templateNameofET, templateNameofMysql].each {
-                  clean_up(token, it, 'template')
-                } //each
-                upload_templates(token, templatePathofET, templatePathofMysql)
+                clean_up(token, templateNameofET, 'template')
+                upload_templates(token, templatePathofET)
               } //retry
             } //container
           } //stage

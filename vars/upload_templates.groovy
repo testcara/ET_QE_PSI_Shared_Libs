@@ -1,10 +1,9 @@
-def call(String token, String templatePathofET, String templatePathofMysql){
+def call(String token, String template){
+//def call(String token, String template, String templatePathofMysql){
 	openshift.withCluster('https://paas.psi.redhat.com', token) {
         openshift.withProject('errata-qe-test'){
-	        echo '--- Upload ET template --->'
-	        openshift.create(templatePathofET)
-	        echo '--- Upload Mysql template --->'
-	        openshift.create(templatePathofMysql)
+	        echo '--- Upload template --->'
+	        openshift.create(template)
     	} //project
     } //cluster
 } //call
