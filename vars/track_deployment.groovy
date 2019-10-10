@@ -4,7 +4,6 @@ def call(String token, String dcName){
         sh "echo $dcName > dcName"
         sh '''
             dcName=$(cat dcName)
-            time=$(cat time)
             # let us wait 5 mins
             for i in {1..5}
             do
