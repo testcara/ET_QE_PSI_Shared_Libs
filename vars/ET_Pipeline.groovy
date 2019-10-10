@@ -110,11 +110,11 @@ def call(String token, String appName, String templateNameofET, String templateN
               container('qe-testing-runner'){
                 script { FAILED_STAGE=env.STAGE_NAME }
                 retry(2) {
-                    def cmd1="oc get pods | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy |cut -d ' ' -f 1"
+                    def cmd1="oc get pods | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
                     echo "Got mysqlPod: ${mysqlPod}"
 
-                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | grep -v deploy | cut -d ' ' -f 1"
+                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
