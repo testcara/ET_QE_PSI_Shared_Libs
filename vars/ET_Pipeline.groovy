@@ -8,7 +8,6 @@ def call(String token, String appName, String templateNameofET, String templateN
   def RUN_USER = '1058980001'
   def MYSQL_USER = "errata"
   def MYSQL_PASSWORD = "errata"
-  def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
   def runner= "mypod-${UUID.randomUUID().toString()}"
   etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
   def FAILED_STAGE
@@ -119,7 +118,7 @@ def call(String token, String appName, String templateNameofET, String templateN
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
-                    import_sql_files_to_db(token, mysqlPod, DB_FILE, MYSQL_USER, MYSQL_PASSWORD)
+                    import_sql_files_to_db(token, mysqlPod, MYSQL_USER, MYSQL_PASSWORD)
                     def db_migration_cmd = "bundle exec rake db:migrate"
                     run_cmd_against_pod(token, etPod, db_migration_cmd)
 
