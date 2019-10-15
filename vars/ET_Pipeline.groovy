@@ -1,7 +1,7 @@
 def call(String token, String appName, String templateNameofET, String templateNameofMysql,
   String etTemplateParameters, String mysqlTemplateParameters,
   String templatePathofET, String templatePathofMysql,
-  String qeTesting, String casesTags, String parallel){
+  String qeTesting, String casesTags, String parallel, String pub_jenkins_build){
 
   echo "---> Now, you are using the ET pipeline shared lib ..."
 
@@ -31,9 +31,6 @@ def call(String token, String appName, String templateNameofET, String templateN
 
     )],
   volumes: [
-  persistentVolumeClaim(
-    claimName: 'et-qe-testing-mysql',
-    mountPath: '/tmp/TS2_db/'),
   persistentVolumeClaim(
     claimName: 'pvc-errata-qe-test-mnt-redhat',
     mountPath: '/mnt/redhat')
@@ -148,11 +145,19 @@ def call(String token, String appName, String templateNameofET, String templateN
           stage('run TS2 testing'){
             container('qe-testing-runner'){
               script { FAILED_STAGE=env.STAGE_NAME }
-              sh '''
-              git clone https://code.engineering.redhat.com/gerrit/errata-rails
-              cd errata-rails
-              git checkout develop
-              '''
+              if(pub_jenkins_build!='none' && pub_jenkins_build!=''){
+                sh '''
+                git clone https://code.engineering.redhat.com/gerrit/errata-rails
+                cd errata-rails
+                git checkout release
+                '''
+              }else{
+                sh '''
+                git clone https://code.engineering.redhat.com/gerrit/errata-rails
+                cd errata-rails
+                git checkout develop
+                '''
+              }
               /*
               The following code does not work for the ssl error.
 
