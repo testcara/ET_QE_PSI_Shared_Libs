@@ -1,7 +1,7 @@
 def call(String token, String appName, String templateNameofET, String templateNameofMysql,
   String etTemplateParameters, String mysqlTemplateParameters,
   String templatePathofET, String templatePathofMysql,
-  String qeTesting, String casesTags, String parallel, String pub_jenkins_build){
+  String qeTesting, String casesTags, String parallel, String current_branch){
 
   echo "---> Now, you are using the ET pipeline shared lib ..."
 
@@ -144,19 +144,13 @@ def call(String token, String appName, String templateNameofET, String templateN
           stage('run TS2 testing'){
             container('qe-testing-runner'){
               script { FAILED_STAGE=env.STAGE_NAME }
-              if(pub_jenkins_build!='none' && pub_jenkins_build!=''){
+                sh "echo $current_branch > current_branch"
                 sh '''
+                current_branch=$(cat current_branch)
                 git clone https://code.engineering.redhat.com/gerrit/errata-rails
                 cd errata-rails
-                git checkout release
+                git checkout ${current_branch}
                 '''
-              }else{
-                sh '''
-                git clone https://code.engineering.redhat.com/gerrit/errata-rails
-                cd errata-rails
-                git checkout develop
-                '''
-              }
               /*
               The following code does not work for the ssl error.
 
