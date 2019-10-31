@@ -166,9 +166,9 @@ def call(String token, String appName, String templateNameofET, String templateN
           } //stage
         } //if
       } //try
-      catch(Exception e) {
-        echo "Exception for testing ${appName}: Failed at ${FAILED_STAGE}"
-      } //catch
+      //catch(Exception e) {
+      //  echo "Exception for testing ${appName}: Failed at ${FAILED_STAGE}"
+     // } //catch
       finally{
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
