@@ -1,4 +1,4 @@
-def call(String token, String appName, String casesFeatures){
+def call(String token, String appName, String etPod, String casesFeatures){
 
 	echo "---> Now, you are using the ET pipeline shared lib ..."
 
@@ -46,9 +46,6 @@ def call(String token, String appName, String casesFeatures){
                         cd errata-rails
                         git checkout develop
                         '''
-                        def cmd="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
-                        def etPod = sh(returnStdout: true, script: cmd).trim()
-                        echo "Got etPod: ${etPod}"
                         run_ts2_testing(token, appName, etPod, casesFeatures)
                     }
                 } //stage
