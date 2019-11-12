@@ -33,7 +33,7 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       cd ${gem_file_path}
 
       RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
-      cucumber_cmd="ET_POD=${pod_name} RUN_ON_PSI=1 TEST_ENV=qe_01 BZ_ADMIN_PASSWD=1HSSQE@redhat JBOSS_JIRA_PASSWD=errata-qe bundle exec cucumber -p remote"
+      cucumber_cmd="ET_POD=${pod_name} RUN_ON_PSI=1 TEST_ENV=qe_01 ET_ADMIN_PASSWD=redhat BZ_ADMIN_PASSWD=1HSSQE@redhat JBOSS_JIRA_PASSWD=errata-qe bundle exec cucumber -p remote"
       cucumber_report="--format json_pretty --strict -o cucumber-report-${app_name}.json"
       features_dir="features/remote"
       rerun_report="-f pretty -f rerun --out rerun.txt"
