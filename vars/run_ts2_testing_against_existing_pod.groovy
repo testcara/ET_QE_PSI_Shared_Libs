@@ -5,7 +5,6 @@ def call(String token, String appName, String casesFeatures){
 	def RUN_USER = '1058980001'
 	def MSYQL_USER = "root"
 	def MYSQL_PASSWORD = "arNdk123_"
-	def DB_FILE = "/tmp/TS2_db/errata.latest.sql"
 	def runner= "mypod-${UUID.randomUUID().toString()}"
 	podTemplate(label: runner,
     containers: [
@@ -23,9 +22,6 @@ def call(String token, String appName, String casesFeatures){
         )],
     volumes: [
     persistentVolumeClaim(
-        claimName: 'et-qe-testing-mysql',
-        mountPath: '/tmp/TS2_db/'),
-    persistentVolumeClaim(
         claimName: 'pvc-errata-qe-test-mnt-redhat',
         mountPath: '/mnt/redhat')
     ])
@@ -34,25 +30,6 @@ def call(String token, String appName, String casesFeatures){
 	    	try{
 	            stage('TS2 testing preparation'){
 	                container('qe-testing-runner'){
-                        def cmd1="oc get pods | grep ${appName}-mysql | grep -v build | cut -d ' ' -f 1"
-                        def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
-                        echo "Got mysqlPod: ${mysqlPod}"
-
-                        def cmd2="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
-                        def etPod = sh(returnStdout: true, script: cmd2).trim()
-                        echo "Got etPod: ${etPod}"
-
-                        import_sql_files_to_db(token, mysqlPod, DB_FILE, MSYQL_USER, MYSQL_PASSWORD)
-                        def db_migration_cmd = "bundle exec rake db:migrate"
-                        run_cmd_against_pod(token, etPod, db_migration_cmd)
-
-                        disable_sending_qpid_message(token, etPod)
-
-                        if(casesFeatures.contains('UMB')){
-                            specify_cucumber_umb_broker(token, etPod)
-                        }
-
-                        restart_et_service(token, etPod)
 
                         echo "Add the pulp configuration files to runner"
                         sh """
@@ -69,13 +46,6 @@ def call(String token, String appName, String casesFeatures){
                         cd errata-rails
                         git checkout develop
                         '''
-                        /*
-                        The following code does not work for the ssl error.
-
-                        git branch: 'develop',
-                            url: 'https://code.engineering.redhat.com/gerrit/errata-rails'
-                        */
-
                         def cmd="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
                         def etPod = sh(returnStdout: true, script: cmd).trim()
                         echo "Got etPod: ${etPod}"
