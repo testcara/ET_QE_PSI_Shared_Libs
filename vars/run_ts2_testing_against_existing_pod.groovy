@@ -45,6 +45,7 @@ def call(String token, String appName, String etPod, String branch, String cases
                   cd errata-rails
                   git checkout ${branch}
                   '''
+                  sh "sleep 360000"
                   run_ts2_testing(token, appName, etPod, casesFeatures)
                 }
              } //stage
