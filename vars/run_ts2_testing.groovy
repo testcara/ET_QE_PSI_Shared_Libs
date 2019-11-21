@@ -33,6 +33,7 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       cd ${gem_file_path}
       sed -i "/gem 'launchy'/a\\  gem 'capybara-screenshot'" Gemfile
       sed -i "/gem 'capybara-screenshot'/a\\  gem 'faraday'" Gemfile
+      sed -i "/gem 'faraday'/a\\  gem 'faraday_middleware'" Gemfile
 
       RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
       cucumber_cmd="ET_POD=${pod_name} RUN_ON_PSI=1 TEST_ENV=qe_01 ET_ADMIN_PASSWD=redhat BZ_ADMIN_PASSWD=1HSSQE@redhat JBOSS_JIRA_PASSWD=errata-qe bundle exec cucumber -p remote"
