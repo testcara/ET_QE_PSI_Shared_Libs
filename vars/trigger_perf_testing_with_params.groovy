@@ -61,7 +61,7 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
             source /etc/bashrc
             export perf_username=$(cat perf_username)
             export perf_user_token=$(cat perf_user_token)
-            export et_build_name_or_id=$(cat et_build_name_or_id)
+            export et_build_name_or_id=$(cat et_version)
             export perf_expect_run_time=$(cat perf_expect_run_time)
             export baseline_job_name=$(cat baseline_job_name)
             cd RC_CI-master/auto_testing_CI
@@ -74,7 +74,7 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
         catch (Exception e){
           sh "echo env.BUILD_URL > test_report_url"
           sh '''
-          et_build_name_or_id=$(cat et_build_name_or_id)
+          et_build_name_or_id=$(cat et_version)
           branch=$(cat et_branch)
           test_report_url=$(cat test_report_url)
           echo "ET Version/Commit: ${et_build_name_or_id}"
