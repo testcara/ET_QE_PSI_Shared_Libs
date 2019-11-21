@@ -1,5 +1,5 @@
 def call(String et_version, String errata_fetch_brew_build='false', String dev_jenkins_user='', String dev_jenkins_user_token='', String dev_jenkins_job='',
-String perf_username, String perf_user_token, String perf_expect_run_time, String baseline_job_name, String et_server='errata-stage-perf.host.stage.eng.bos.redhat.com'){
+String perf_username, String perf_user_token, String perf_expect_run_time, String baseline_job_id, String baseline_job_name, String et_server='errata-stage-perf.host.stage.eng.bos.redhat.com'){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -27,6 +27,7 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
         sh "echo $et_version > et_version"
         sh "echo $perf_expect_run_time > perf_expect_run_time"
         sh "echo $baseline_job_name > baseline_job_name"
+        sh "echo $baseline_job_id > baseline_job_id"
         try {
           sh '''
             whoami || true
@@ -64,11 +65,12 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
             export et_build_name_or_id=$(cat et_version)
             export perf_expect_run_time=$(cat perf_expect_run_time)
             export baseline_job_name=$(cat baseline_job_name)
+			export baseline_job_id=$(cat baseline_job_id)
             cd RC_CI-master/auto_testing_CI
             echo "=== Trigger performance testing ==="
             export PYTHONHTTPSVERIFY=0
             #python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_name} ${et_build_version} ${errata_fetch_brew_build} ${ET_Testing_Server}
-            python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_name} ${et_build_version} ${errata_fetch_brew_build}
+            python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_id} ${baseline_job_name} ${et_build_name_or_id} ${errata_fetch_brew_build}
           '''
         }
         catch (Exception e){
