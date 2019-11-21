@@ -1,5 +1,5 @@
 def call(String et_version, String errata_fetch_brew_build='false', String dev_jenkins_user='', String dev_jenkins_user_token='', String dev_jenkins_job='',
-String perf_username, String perf_user_token, String perf_expect_run_time, String baseline_job_id, String et_server='errata-stage-perf.host.stage.eng.bos.redhat.com'){
+String perf_username, String perf_user_token, String perf_expect_run_time, String baseline_job_name, String et_server='errata-stage-perf.host.stage.eng.bos.redhat.com'){
   def runner = "mypod-${UUID.randomUUID().toString()}"
   podTemplate(label: runner,
   containers: [
@@ -17,16 +17,16 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
   {
     node(runner) {
       container('et-python2-runner'){
-        sh "echo $et_version > et_version"
         sh "echo $errata_fetch_brew_build > errata_fetch_brew_build"
         sh "echo $dev_jenkins_job > dev_jenkins_job"
         sh "echo $dev_jenkins_user > dev_jenkins_user"
         sh "echo $dev_jenkins_user_token > dev_jenkins_user_token"
         sh "echo $perf_username  > perf_username"
         sh "echo $perf_user_token > perf_user_token"
-        sh "echo $et_build_name_or_id > et_build_name_or_id"
+        sh "echo $et_server > et_server"
+        sh "echo $et_version > et_version"
         sh "echo $perf_expect_run_time > perf_expect_run_time"
-        sh "echo $baseline_job_id > baseline_job_id"
+        sh "echo $baseline_job_name > baseline_job_name"
         try {
           sh '''
             whoami || true
@@ -63,12 +63,12 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
             export perf_user_token=$(cat perf_user_token)
             export et_build_name_or_id=$(cat et_build_name_or_id)
             export perf_expect_run_time=$(cat perf_expect_run_time)
-            export baseline_job_id=$(cat baseline_job_id)
+            export baseline_job_name=$(cat baseline_job_name)
             cd RC_CI-master/auto_testing_CI
             echo "=== Trigger performance testing ==="
             export PYTHONHTTPSVERIFY=0
-            #python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_id} ${et_build_version} ${errata_fetch_brew_build} ${ET_Testing_Server}
-            python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_id} ${et_build_version} ${errata_fetch_brew_build}
+            #python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_name} ${et_build_version} ${errata_fetch_brew_build} ${ET_Testing_Server}
+            python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_name} ${et_build_version} ${errata_fetch_brew_build}
           '''
         }
         catch (Exception e){
