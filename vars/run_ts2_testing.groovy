@@ -31,9 +31,9 @@ def call(String token, String app_name, String etPod, String casesFeatures){
 
       gem_file_path=$(find . -name "Gemfile.lock" | sed "s/Gemfile.lock//")
       cd ${gem_file_path}
+      sed -i "/gem 'launchy'/a\  gem 'capybara-screenshot'" Gemfile
 
       RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
-      gem install --install-dir /opt/rh/rh-ruby22/root/usr/local/bin capybara-screenshot --version=1.0.22
       cucumber_cmd="ET_POD=${pod_name} RUN_ON_PSI=1 TEST_ENV=qe_01 ET_ADMIN_PASSWD=redhat BZ_ADMIN_PASSWD=1HSSQE@redhat JBOSS_JIRA_PASSWD=errata-qe bundle exec cucumber -p remote"
       cucumber_report="--format json_pretty --strict -o cucumber-report-${app_name}.json"
       features_dir="features/remote"
