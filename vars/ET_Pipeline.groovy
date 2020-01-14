@@ -1,7 +1,7 @@
 def call(String token, String bc_strategy, String appName, String templateNameofET, String templateNameofMysql,
     String etTemplateParameters, String mysqlTemplateParameters,
 		String templatePathofET, String templatePathofMysql,
-		String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){++
+		String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){
 
 	  echo "---> Now, you are using the ET pipeline shared lib ..."
 
