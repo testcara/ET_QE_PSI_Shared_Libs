@@ -60,7 +60,31 @@ mountPath: '/mnt/redhat')
               // We would wait 5 mins to make sure its deployed succesfully
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                  openshift.withProject('c3i-carawang-123'){
-                  track_deployment(token, "${appName}-mariadb-102-rhel7")
+                    sh "echo ${appName}-mariadb-102-rhel7 > dcName"
+                    sh '''
+                        dcName=$(cat dcName)
+                        # let us wait 5 mins
+                        for i in {1..5}
+                        do
+                            sleep 60 # 10 seconds
+                            status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
+                            if [[ ${status} =~ "Running" ]]
+                            then
+                              echo "---> Deployment complete ..."
+                              exit 0
+                            elif [[ ${status} =~ "Failed" ]] || [[ ${status} =~ "Error" ]]
+                            then
+                              echo "---> Deployment has been failed ..."
+                              exit 1
+                            else
+                              echo "---> Still running ..."
+                              if [[ $i -eq 5 ]]
+                              then
+                                exit 1
+                              fi
+                            fi
+                        done
+                       '''
                 } //project
               } // cluster
             } //retry
@@ -70,19 +94,20 @@ mountPath: '/mnt/redhat')
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
-              if(parallel=="true"){
                 openshift.withCluster('https://paas.psi.redhat.com', token) {
                   openshift.withProject('c3i-carawang-123'){
-                    create_apps_by_template_with_oc(token, appName, templateNameofET, etTemplateParameters)
+                    sh "echo $appName > name"
+                    sh "echo $templateNameofET > templateParameters"
+                    sh "echo $etTemplateParameters > template"
+                    sh '''
+                    app_name=$(cat name)
+                    template=$(cat template)
+                    templateParameters=$(cat templateParameters)
+                    templateParameters="-p=APP_NAME=${app_name} ${templateParameters}"
+                    oc process ${template} ${templateParameters} | oc create -f -
+                    '''
                   } //project
                 } //cluster
-              } else{
-                openshift.withCluster('https://paas.psi.redhat.com', token) {
-                  openshift.withProject('c3i-carawang-123'){
-                    create_apps_by_template_without_oc(token, appName, templateNameofET, etTemplateParameters)
-                  }//project
-                } //cluseter
-              } //else
             } //retry
           } //container
         } //stage
@@ -92,7 +117,29 @@ mountPath: '/mnt/redhat')
             retry(2) {
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject('c3i-carawang-123'){
-                  build_bc_and_track_build_by_oc(token, 20, "${appName}-bc")
+                    sh "echo ${appName}-bc > bcName"
+                    sh "oc start-build $bcName"
+                    sh "echo $bcName > bcName"
+                    sh '''
+                    bcName=$(cat bcName)
+                    # let us wait 30 mins
+                    for i in {1..60}
+                    do
+                        sleep 30 # 30 seconds
+                        status=$(oc get build | grep ${bcName} | awk "{print $4}")
+                        if [[ ${status} =~ "Complete" ]]
+                        then
+                    echo "---> Build complete ..."
+                            exit 0
+                        elif [[ ${status} =~ "Failed" ]]
+                        then
+                            echo "---> Build has been failed ..."
+                            exit 1
+                        else
+                            echo "---> Still running ..."
+                        fi
+                    done
+                    '''
                 } //project
               } //cluster
             } //retry
@@ -104,7 +151,29 @@ mountPath: '/mnt/redhat')
             retry(2) {
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject('c3i-carawang-123'){
-                  deploy_dc_and_track_deployment_by_oc(token, 10, "${appName}-rails")
+                    echo "--- Deploy dc: ${appName}-rails--->"
+                    sh "oc rollout latest ${appName}-rails"
+                    sh "echo ${appName}-rails > dcName"
+                    sh '''
+                    dcName=$(cat dcName)
+                    # let us wait 5 mins
+                    for i in {1..30}
+                    do
+                        sleep 10 # 10 seconds
+                        status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
+                        if [[ ${status} =~ "Running" ]]
+                        then
+                            echo "---> Deployment complete ..."
+                            exit 0
+                        elif [[ ${status} =~ "Failed" ]] || [[ ${status} =~ "Error" ]]
+                        then
+                            echo "---> Deployment has been failed ..."
+                            exit 1
+                        else
+                            echo "---> Still running ..."
+                        fi
+                    done
+                    '''
                 } //project
               } //cluster
             } //retry
