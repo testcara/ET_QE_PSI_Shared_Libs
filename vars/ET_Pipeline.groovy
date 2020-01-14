@@ -179,13 +179,6 @@ mountPath: '/mnt/redhat')
           } //stage
         } //if
       } //try
-      //catch(Exception e) {
-      //  echo "Exception for testing ${appName}: Failed at ${FAILED_STAGE}"
-     // } //catch
-      finally{
-        archiveArtifacts '**/cucumber-report*.json'
-        cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
-      } // finally
     } //node
   } //containerTemplate
 }
