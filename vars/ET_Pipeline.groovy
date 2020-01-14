@@ -51,7 +51,7 @@ mountPath: '/mnt/redhat')
                   repoImage=$(cat repoImage)
                   appParameters=$(cat appParameters)
                   echo oc new-app --name=${app_name} -e ${appParameters} ${repoImage}
-                  oc new-app --name=${app_name} -e ${appParameters} ${repoImage}
+                  oc new-app --name=${app_name} -e ${appParameters} ${repoImage} -n c3i-carawang-123
                   '''
                 } //project
               } //cluster
