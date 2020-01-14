@@ -118,7 +118,7 @@ mountPath: '/mnt/redhat')
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject('c3i-carawang-123'){
                     sh "echo ${appName}-bc > bcName"
-                    sh "oc start-build ${appName}-bc  "
+                    sh "oc start-build ${appName}-bc -n c3i-carawang-123 "
                     sh '''
                     bcName=$(cat bcName)
                     # let us wait 30 mins
@@ -151,7 +151,7 @@ mountPath: '/mnt/redhat')
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject('c3i-carawang-123'){
                     echo "--- Deploy dc: ${appName}-rails--->"
-                    sh "oc rollout latest ${appName}-rails"
+                    sh "oc rollout latest ${appName}-rails  -n c3i-carawang-123"
                     sh "echo ${appName}-rails > dcName"
                     sh '''
                     dcName=$(cat dcName)
