@@ -1,41 +1,42 @@
 def call(String token, String bc_strategy, String appName, String templateNameofET, String templateNameofMysql,
-  String etTemplateParameters, String mysqlTemplateParameters,
-  String templatePathofET, String templatePathofMysql,
-  String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){
+	openshift.withCluster(){
+			openshift.withProject("c3i-carawang-123"){
+					String etTemplateParameters, String mysqlTemplateParameters,
+					String templatePathofET, String templatePathofMysql,
+					String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){
 
-  echo "---> Now, you are using the ET pipeline shared lib ..."
+				    echo "---> Now, you are using the ET pipeline shared lib ..."
 
-  def RUN_USER = '1058980001'
-  def MYSQL_USER = "errata"
-  def MYSQL_PASSWORD = "errata"
-  def runner= "mypod-${UUID.randomUUID().toString()}"
-  etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
-  def FAILED_STAGE
-  def MYSQL_DATABASE = 'errata'
-  def mysqlAppParameters="MYSQL_USER=" + MYSQL_USER + " -e MYSQL_ROOT_PASSWORD="+ MYSQL_PASSWORD + " -e MYSQL_PASSWORD=" + MYSQL_PASSWORD + " -e MYSQL_DATABASE=" + MYSQL_DATABASE
-  def mysqlImageRepo="registry.access.redhat.com/rhscl/mariadb-102-rhel7"
+					def RUN_USER = '1058980001'
+					def MYSQL_USER = "errata"
+					def MYSQL_PASSWORD = "errata"
+					def runner= "mypod-${UUID.randomUUID().toString()}"
+					etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
+					def FAILED_STAGE
+					def MYSQL_DATABASE = 'errata'
+					def mysqlAppParameters="MYSQL_USER=" + MYSQL_USER + " -e MYSQL_ROOT_PASSWORD="+ MYSQL_PASSWORD + " -e MYSQL_PASSWORD=" + MYSQL_PASSWORD + " -e MYSQL_DATABASE=" + MYSQL_DATABASE
+					def mysqlImageRepo="registry.access.redhat.com/rhscl/mariadb-102-rhel7"
 
 
-  podTemplate(label: runner,
-  containers: [
-  containerTemplate(
-    name: 'qe-testing-runner',
-    image: 'docker-registry.upshift.redhat.com/errata-qe-test/qe_testing_upshift_runner:latest',
-    alwaysPullImage: true,
-    command: 'cat',
-    ttyEnabled: true,
-    envVars: [
-      envVar(key: 'GIT_SSL_NO_VERIFY', value: 'true')
-    ]
-
-    )],
-  volumes: [
-  persistentVolumeClaim(
-    claimName: 'pvc-errata-qe-test-mnt-redhat',
-    mountPath: '/mnt/redhat')
-  ])
-  {
-    node(runner) {
+					podTemplate(label: runner,
+					containers: [
+					containerTemplate(
+					name: 'qe-testing-runner',
+					image: 'docker-registry.upshift.redhat.com/errata-qe-test/qe_testing_upshift_runner:latest',
+					alwaysPullImage: true,
+					command: 'cat',
+					ttyEnabled: true,
+					envVars: [
+					envVar(key: 'GIT_SSL_NO_VERIFY', value: 'true')
+					]
+					)],
+			volumes: [
+			persistentVolumeClaim(
+			claimName: 'pvc-errata-qe-test-mnt-redhat',
+			mountPath: '/mnt/redhat')
+			 ])
+	 {
+	node(runner) {
       try {
         stage('clean apps') {
           container('qe-testing-runner'){
@@ -198,4 +199,6 @@ def call(String token, String bc_strategy, String appName, String templateNameof
       } // finally
     } //node
   } //containerTemplate
+}
+}
 }
