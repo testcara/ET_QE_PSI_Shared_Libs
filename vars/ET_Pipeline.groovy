@@ -67,7 +67,7 @@ mountPath: '/mnt/redhat')
                         for i in {1..5}
                         do
                             sleep 60 # 10 seconds
-                            status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
+                            status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
                             if [[ ${status} =~ "Running" ]]
                             then
                               echo "---> Deployment complete ..."
