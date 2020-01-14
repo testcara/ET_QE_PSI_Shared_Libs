@@ -178,7 +178,6 @@ mountPath: '/mnt/redhat')
             } //container
           } //stage
         } //if
-      } //try
     } //node
   } //containerTemplate
 }
