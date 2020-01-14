@@ -43,7 +43,16 @@ mountPath: '/mnt/redhat')
               echo "${mysqlAppParameters}"
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                  openshift.withProject('c3i-carawang-123'){
-                  create_apps_by_new_app_with_oc("${appName}-mariadb-102-rhel7", mysqlAppParameters, mysqlImageRepo)
+                  sh "echo ${appName}-mariadb-102-rhel7 > appName"
+                  sh "echo $mysqlAppParameters > appParameters"
+                  sh "echo $mysqlImageRepo > repoImage"
+                  sh '''
+                  app_name=$(cat appName)
+                  repoImage=$(cat repoImage)
+                  appParameters=$(cat appParameters)
+                  echo oc new-app --name=${app_name} -e ${appParameters} ${repoImage}
+                  oc new-app --name=${app_name} -e ${appParameters} ${repoImage}
+                  '''
                 } //project
               } //cluster
             } //retry
