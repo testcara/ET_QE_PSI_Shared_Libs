@@ -1,7 +1,7 @@
 def call(String token, String bc_strategy, String appName, String templateNameofET, String templateNameofMysql,
     String etTemplateParameters, String mysqlTemplateParameters,
 		String templatePathofET, String templatePathofMysql,
-		String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){
+		String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){++
 
 	  echo "---> Now, you are using the ET pipeline shared lib ..."
 
@@ -185,23 +185,7 @@ mountPath: '/mnt/redhat')
       finally{
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
-        clean_ws()
-        if(remove_pods=="true"){
-          container('qe-testing-runner'){
-            retry(2) {
-              [appName, "${appName}-mariadb-102-rhel7"].each {
-                if(parallel=="true"){
-                  clean_up_by_oc(token, it, 'app')
-                } else{
-                  clean_up(token, it, 'app')
-                } //if
-              } //each
-            } //retry
-          } //container
-        }//if_remove_pods
       } // finally
     } //node
   } //containerTemplate
-}
-}
 }
