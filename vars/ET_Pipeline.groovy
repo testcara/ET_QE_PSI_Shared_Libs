@@ -67,7 +67,7 @@ mountPath: '/mnt/redhat')
                         for i in {1..5}
                         do
                             sleep 60 # 10 seconds
-                            status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
+                            status=$(oc get pods -n c3i-carawang-123 | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
                             if [[ ${status} =~ "Running" ]]
                             then
                               echo "---> Deployment complete ..."
@@ -118,14 +118,14 @@ mountPath: '/mnt/redhat')
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject('c3i-carawang-123'){
                     sh "echo ${appName}-bc > bcName"
-                    sh "oc start-build ${appName}-bc "
+                    sh "oc start-build ${appName}-bc  "
                     sh '''
                     bcName=$(cat bcName)
                     # let us wait 30 mins
                     for i in {1..60}
                     do
                         sleep 30 # 30 seconds
-                        status=$(oc get build | grep ${bcName} | awk "{print $4}")
+                        status=$(oc get build -n c3i-carawang-123 | grep ${bcName} | awk "{print $4}")
                         if [[ ${status} =~ "Complete" ]]
                         then
                             echo "---> Build complete ..."
@@ -159,7 +159,7 @@ mountPath: '/mnt/redhat')
                     for i in {1..30}
                     do
                         sleep 10 # 10 seconds
-                        status=$(oc get pods | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
+                        status=$(oc get pods -n c3i-carawang-123 | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
                         if [[ ${status} =~ "Running" ]]
                         then
                             echo "---> Deployment complete ..."
@@ -185,11 +185,11 @@ mountPath: '/mnt/redhat')
                 retry(2) {
                   openshift.withCluster('https://paas.psi.redhat.com', token) {
                   openshift.withProject('c3i-carawang-123'){
-                    def cmd1="oc get pods | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
+                    def cmd1="oc get pods -n c3i-carawang-123| grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
                     echo "Got mysqlPod: ${mysqlPod}"
 
-                    def cmd2="oc get pods | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
+                    def cmd2="oc get pods -n c3i-carawang-123 | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
@@ -237,16 +237,16 @@ mountPath: '/mnt/redhat')
                   url: 'https://code.engineering.redhat.com/gerrit/errata-rails'
                 */
 
-                def cmd="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
+                def cmd="oc get pods -n c3i-carawang-123 | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
                 def etPod = sh(returnStdout: true, script: cmd).trim()
                 echo "Got etPod: ${etPod}"
                 def etSVC=""
                 if(bc_strategy == 'docker'){
-                  cmd="oc get svc | grep $appName | cut -d \" \" -f 1"
+                  cmd="oc get svc -n c3i-carawang-123 | grep $appName | cut -d \" \" -f 1"
                   etSVC= sh(returnStdout: true, script: cmd).trim()
                 } //if
                 if(bc_strategy == 's2i'){
-                  cmd="oc get routes | grep $appName | sed  \"s/\\ \\+/ /g\" | cut -d \" \" -f 2"
+                  cmd="oc get routes -n c3i-carawang-123 | grep $appName | sed  \"s/\\ \\+/ /g\" | cut -d \" \" -f 2"
                   etSVC= sh(returnStdout: true, script: cmd).trim()
                 } //if
                 run_ts2_testing(token, appName, etPod, casesTags, etSVC)
