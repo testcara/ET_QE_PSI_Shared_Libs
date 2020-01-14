@@ -125,7 +125,7 @@ mountPath: '/mnt/redhat')
                     for i in {1..60}
                     do
                         sleep 30 # 30 seconds
-                        status=$(oc get build -n c3i-carawang-123 | grep ${bcName} | awk "{print $4}")
+                        status=$(oc get build -n c3i-carawang-123 | grep ${bcName} | awk \'{print $4}\')
                         if [[ ${status} =~ "Complete" ]]
                         then
                             echo "---> Build complete ..."
@@ -159,7 +159,7 @@ mountPath: '/mnt/redhat')
                     for i in {1..30}
                     do
                         sleep 10 # 10 seconds
-                        status=$(oc get pods -n c3i-carawang-123 | grep ${dcName} | grep -v build | grep -v deploy | awk "{print $3}")
+                        status=$(oc get pods -n c3i-carawang-123 | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
                         if [[ ${status} =~ "Running" ]]
                         then
                             echo "---> Deployment complete ..."
