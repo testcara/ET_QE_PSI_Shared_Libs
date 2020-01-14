@@ -104,7 +104,7 @@ mountPath: '/mnt/redhat')
                     template=$(cat template)
                     templateParameters=$(cat templateParameters)
                     templateParameters="-p=APP_NAME=${app_name} ${templateParameters}"
-                    oc process ${template} ${templateParameters} | oc create -f -  --namespace=c3i-carawang-123
+                    oc process ${template} ${templateParameters} -n c3i-carawang-123 | oc create -f -  --namespace=c3i-carawang-123
                     '''
                   } //project
                 } //cluster
