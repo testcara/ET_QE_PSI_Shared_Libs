@@ -118,8 +118,7 @@ mountPath: '/mnt/redhat')
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject('c3i-carawang-123'){
                     sh "echo ${appName}-bc > bcName"
-                    sh "oc start-build $bcName"
-                    sh "echo $bcName > bcName"
+                    sh "oc start-build ${appName}-bc "
                     sh '''
                     bcName=$(cat bcName)
                     # let us wait 30 mins
@@ -129,7 +128,7 @@ mountPath: '/mnt/redhat')
                         status=$(oc get build | grep ${bcName} | awk "{print $4}")
                         if [[ ${status} =~ "Complete" ]]
                         then
-                    echo "---> Build complete ..."
+                            echo "---> Build complete ..."
                             exit 0
                         elif [[ ${status} =~ "Failed" ]]
                         then
