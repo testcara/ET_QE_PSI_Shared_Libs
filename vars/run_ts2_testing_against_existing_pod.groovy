@@ -1,4 +1,4 @@
-def call(String token, String appName, String etPod, String branch, String casesFeatures){
+def call(String token, String appName, String appSVC, String etPod, String branch, String casesFeatures, String debug){
 
   echo "---> Now, you are using the ET pipeline shared lib ..."
   def RUN_USER = '1058980001'
@@ -45,8 +45,12 @@ def call(String token, String appName, String etPod, String branch, String cases
                   cd errata-rails
                   git checkout ${branch}
                   '''
-                  sh "sleep 360000"
-                  run_ts2_testing(token, appName, etPod, casesFeatures)
+                  if(debug=="true"){
+                  sh '''
+                  sleep 36000
+                  '''
+                  } //if
+                  run_ts2_testing(token, appName, etPod, casesFeatures, appSVC)
                 }
              } //stage
          } //try

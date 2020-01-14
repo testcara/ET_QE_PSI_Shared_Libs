@@ -1,6 +1,5 @@
-def call(String token, String app_name, String etPod, String casesFeatures){
-  openshift.withCluster('https://paas.psi.redhat.com', token) {
-    openshift.withProject('errata-qe-test'){
+def call(String token, String app_name, String etPod, String casesFeatures, String app_svc){
+    sh "echo ${app_svc} > app_svc"
     sh "echo ${app_name} > app_name"
     sh "echo ${etPod} > et_pod"
     sh "echo \"${casesFeatures}\" > cases_features"
@@ -9,7 +8,7 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       reset_testing_host(){
         default_host="et-system-test-qe-01.usersys.redhat.com"
         env_path=$(find . -name 'env.yml')
-        sed -i "s/${default_host}/${1}.cloud.paas.psi.redhat.com/g" ${env_path}
+        sed -i "s/${default_host}/${1}/g" ${env_path}
       }
 
       specify_runner_umb_for_cucumber_umb_cases(){
@@ -27,7 +26,8 @@ def call(String token, String app_name, String etPod, String casesFeatures){
         specify_runner_umb_for_cucumber_umb_cases
       fi
 
-      reset_testing_host ${app_name}
+      svc=$(cat app_svc)
+      reset_testing_host ${svc}
 
       gem_file_path=$(find . -name "Gemfile.lock" | sed "s/Gemfile.lock//")
       cd ${gem_file_path}
@@ -35,6 +35,14 @@ def call(String token, String app_name, String etPod, String casesFeatures){
       sed -i "/gem 'capybara-screenshot'/a\\  gem 'faraday'" Gemfile
       sed -i "/gem 'faraday'/a\\  gem 'faraday_middleware'" Gemfile
       sed -i "s/require 'jira'/require 'jira-ruby'/" features/remote/support/jira.rb
+      # The current cases of the release branch cannot test the release source code well.
+      # We will meet the following error
+      # uninitialized constant Minitest::Assertion (NameError)
+      # The following command will fix the problem
+      sed -i 's/test\\/unit/minitest/g' features/remote/support/env.rb
+      sed -i "s/-- bundle exec rails console \\/tmp\\/rails-#{date}\\/Autotasks.txt/-- bash -c 'RAILS_ENV=staging bundle exec rails console \\/tmp\\/rails-#{date}\\/Autotasks.txt'/g" features/remote/support/errata_rails_console.rb
+      sed -i "s/-- bundle exec rails runner \\/tmp\\/rails-#{date}\\/Autotasks.txt/-- bash -c 'RAILS_ENV=staging bundle exec rails runner \\/tmp\\/rails-#{date}\\/Autotasks.txt'/g" features/remote/support/errata_rails_console.rb
+
 
       RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
       cucumber_cmd="ET_POD=${pod_name} RUN_ON_PSI=1 TEST_ENV=qe_01 ET_ADMIN_PASSWD=redhat BZ_ADMIN_PASSWD=1HSSQE@redhat JBOSS_JIRA_PASSWD=errata-qe bundle exec cucumber -p remote"
@@ -64,6 +72,4 @@ def call(String token, String app_name, String etPod, String casesFeatures){
         echo "No new report json, we would keep the origin reports!"
       fi
       '''
-    } //project
-  } //cluster
 }

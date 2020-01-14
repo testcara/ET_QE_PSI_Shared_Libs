@@ -1,4 +1,4 @@
-def call(String token, String appName, String templateNameofET, String templateNameofMysql,
+def call(String token, String bc_strategy, String appName, String templateNameofET, String templateNameofMysql,
   String etTemplateParameters, String mysqlTemplateParameters,
   String templatePathofET, String templatePathofMysql,
   String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){
@@ -161,7 +161,16 @@ def call(String token, String appName, String templateNameofET, String templateN
               def cmd="oc get pods | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
               def etPod = sh(returnStdout: true, script: cmd).trim()
               echo "Got etPod: ${etPod}"
-              run_ts2_testing(token, appName, etPod, casesTags)
+              def etSVC=""
+              if(bc_strategy == 'docker'){
+                cmd="oc get svc | grep $appName | cut -d \" \" -f 1"
+                etSVC= sh(returnStdout: true, script: cmd).trim()
+              } //if
+              if(bc_strategy == 's2i'){
+                cmd="oc get routes | grep $appName | sed  \"s/\\ \\+/ /g\" | cut -d \" \" -f 2"
+                etSVC= sh(returnStdout: true, script: cmd).trim()
+              } //if
+              run_ts2_testing(token, appName, etPod, casesTags, etSVC)
             } //container
           } //stage
         } //if

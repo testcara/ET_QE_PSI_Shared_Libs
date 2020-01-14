@@ -35,10 +35,10 @@ def call(String perf_username, String perf_user_token, String et_build_name_or_i
           export baseline_job_id=$(cat baseline_job_id)
 
           echo "===============Download the CI files under $(pwd)=========="
-          wget http://github.com/testcara/RC_CI/archive/master.zip
-          unzip master.zip
-          source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
-          source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+          git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
+
+          source rc_ci/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+          source rc_ci/auto_testing_CI/CI_Shell_common_usage.sh
 
           et_build_version=""
           install_scripts_env
@@ -49,7 +49,7 @@ def call(String perf_username, String perf_user_token, String et_build_name_or_i
           fi
           et_build_version=$(initial_et_build_version ${et_build_name_or_id})
 
-          cd RC_CI-master/auto_testing_CI
+          cd rc_ci/auto_testing_CI
           echo "=== Trigger performance testing ==="
           export PYTHONHTTPSVERIFY=0
           python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_id} ${et_build_version}

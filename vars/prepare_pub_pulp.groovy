@@ -28,9 +28,9 @@ def call(String pubServer, String pulpServer, String pulpDockerServer) {
             sh '''git config --global http.sslVerify false'''
             git 'https://gitlab.infra.prod.eng.rdu2.redhat.com/yuzheng/ansible-pub-qe.git'
             sh '''
-            wget http://github.com/testcara/RC_CI/archive/master.zip
-            unzip master.zip
-            cd RC_CI-master/auto_testing_CI/
+            git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
+
+            cd rc_ci/auto_testing_CI/
             export CI3_WORKSPACE="${WORKSPACE}"
             ./initial_pub_pulp_psi.sh
             ./prepare_pulp_pulp_db_and_services.sh

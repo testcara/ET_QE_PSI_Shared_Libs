@@ -41,16 +41,16 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
             export dev_jenkins_job=$(cat dev_jenkins_job)
             git config --global http.sslVerify false
             git clone https://gitlab.infra.prod.eng.rdu2.redhat.com/ansible-playbooks/errata-tool-playbooks.git
-            wget http://github.com/testcara/RC_CI/archive/master.zip
-            unzip master.zip
+            git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
+
             export WORKSPACE=`pwd`
             export PYTHONHTTPSVERIFY=0
-            source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
-            source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+            source rc_ci/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+            source rc_ci/auto_testing_CI/CI_Shell_common_usage.sh
             install_scripts_env
             if [[ -z "${et_version}" ]]
             then
-              et_build_id_and_branch=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_target_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
+              et_build_id_and_branch=$(python rc_ci/auto_testing_CI/talk_to_rc_jenkins_to_get_the_target_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
               if [[ ${et_build_id_and_branch} =~ 'There is no [success] builds today' ]]
               then
                 echo "There is no build today, Let us ignore the environment preparation."
@@ -66,7 +66,7 @@ String perf_username, String perf_user_token, String perf_expect_run_time, Strin
             export perf_expect_run_time=$(cat perf_expect_run_time)
             export baseline_job_name=$(cat baseline_job_name)
 			export baseline_job_id=$(cat baseline_job_id)
-            cd RC_CI-master/auto_testing_CI
+            cd rc_ci/auto_testing_CI
             echo "=== Trigger performance testing ==="
             export PYTHONHTTPSVERIFY=0
             #python talk_to_perf_jenkins.py full_perf ${perf_expect_run_time} ${perf_username} ${perf_user_token} ${baseline_job_name} ${et_build_version} ${errata_fetch_brew_build} ${ET_Testing_Server}

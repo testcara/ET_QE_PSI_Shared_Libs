@@ -39,8 +39,7 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
             sh '''
             user_id=$(id | cut -d " " -f 1 | cut -d "=" -f 2 | tr -d ' ')
             echo "jenkins:x:${user_id}:0::/home/jenkins:/bin/bash" >> /etc/passwd
-            wget http://github.com/testcara/RC_CI/archive/master.zip
-            unzip master.zip
+            git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
 
             export CI3_WORKSPACE="${WORKSPACE}"
             export pub_server=$(cat ${CI3_WORKSPACE}/pub_server)
@@ -48,7 +47,7 @@ def call(String pubServer, String pulpServer, String pulpDockerServer, String pu
             export pulp_docker_server=$(cat ${CI3_WORKSPACE}/pulp_docker_server)
             export pub_jenkins_build=$(cat ${CI3_WORKSPACE}/pub_jenkins_build)
 
-            cd RC_CI-master/auto_testing_CI/
+            cd rc_ci/auto_testing_CI/
             ./upgrade_pub_pulp_psi.sh
             '''
             }

@@ -38,15 +38,15 @@ def call(String APIUsername, String APIToken, String TS2PostMergePipeline, Strin
           export TS2PostMergePipeline=$(cat TS2PostMergePipeline)
           export JENKINS_URL=$(cat JENKINS_URL)
           echo "===============Download the CI files under $(pwd)==========" >> useless_log
-          wget http://github.com/testcara/RC_CI/archive/master.zip >> useless_log
-          unzip master.zip >> useless_log
-          source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh >> useless_log
-          source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh >> useless_log
+          git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git >> useless_log
+
+          source rc_ci/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh >> useless_log
+          source rc_ci/auto_testing_CI/CI_Shell_common_usage.sh >> useless_log
 
           install_scripts_env >> useless_log
           echo "Compare the reports and return the results" >> useless_log
           export RC_Jenkins_URL=$JENKINS_URL
-          python RC_CI-master/auto_testing_CI/compare_cucumber_reports.py "${APIUsername}" "${APIToken}"  \
+          python rc_ci/auto_testing_CI/compare_cucumber_reports.py "${APIUsername}" "${APIToken}"  \
            "${TS2PostMergePipeline}" "${current_cucumber_report}"
           '''
         String subject = "Feature Monitoring Report"

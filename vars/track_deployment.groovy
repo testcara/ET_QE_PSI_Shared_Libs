@@ -1,6 +1,4 @@
 def call(String token, String dcName){
-    openshift.withCluster('https://paas.psi.redhat.com', token) {
-        openshift.withProject('errata-qe-test'){
         sh "echo $dcName > dcName"
         sh '''
             dcName=$(cat dcName)
@@ -26,6 +24,4 @@ def call(String token, String dcName){
                 fi
             done
            '''
-        }//project
-    }//cluster
 }//call

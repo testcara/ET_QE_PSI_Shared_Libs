@@ -40,18 +40,18 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
 
             git config --global http.sslVerify false
             git clone https://gitlab.infra.prod.eng.rdu2.redhat.com/ansible-playbooks/errata-tool-playbooks.git
-            wget http://github.com/testcara/RC_CI/archive/master.zip
-            unzip master.zip
+            git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
+
             export WORKSPACE=`pwd`
             export PYTHONHTTPSVERIFY=0
 
-            source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
-            source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+            source rc_ci/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+            source rc_ci/auto_testing_CI/CI_Shell_common_usage.sh
             install_scripts_env
 
             if [[ -z "${et_version}" ]]
             then
-              et_build_id_and_branch=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_target_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
+              et_build_id_and_branch=$(python rc_ci/auto_testing_CI/talk_to_rc_jenkins_to_get_the_target_build.py ${dev_jenkins_user} ${dev_jenkins_user_token} ${dev_jenkins_job})
               if [[ ${et_build_id_and_branch} =~ 'There is no [success] builds today' ]]
               then
                 echo "There is no build today, Let us ignore the environment preparation."
@@ -62,10 +62,10 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
               export et_build_name_or_id=$(cat et_build_name_or_id)
             fi
 
-            RC_CI-master/auto_testing_CI/prepare_et_server_with_rpm_by_ansible.sh
+            rc_ci/auto_testing_CI/prepare_et_server_with_rpm_by_ansible.sh
           '''
         }
-        catch (Exception e){ 
+        catch (Exception e){
           sh "echo env.BUILD_URL > test_report_url"
           sh '''
           et_build_name_or_id=$(cat et_build_name_or_id)
@@ -75,7 +75,7 @@ def call(String et_server, String et_version, String errata_fetch_brew_build='fa
           echo "Testing Result: FAILED
           echo "Testing Report URL: ${test_report_url}"
           '''
-        } //catch  
+        } //catch
       } //container
     } // node
   } //pod

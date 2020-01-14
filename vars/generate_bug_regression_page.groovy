@@ -17,7 +17,7 @@ def call(String et_server, String confluence_username, String confluence_passwor
   {
     node(runner) {
       container('et-ansible-runner'){
-    sh "echo $et_server > et_server"
+      sh "echo $et_server > et_server"
         sh "echo $et_build_name_or_id > et_build_name_or_id"
         sh "echo $confluence_username > confluence_username"
         sh "echo $confluence_password > confluence_password"
@@ -39,10 +39,10 @@ def call(String et_server, String confluence_username, String confluence_passwor
           export jira_parent_page=$(cat jira_parent_page)
 
           echo "===============Download the CI files under $(pwd)=========="
-          wget http://github.com/testcara/RC_CI/archive/master.zip
-          unzip master.zip
-          source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
-          source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+          git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
+
+          source rc_ci/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+          source rc_ci/auto_testing_CI/CI_Shell_common_usage.sh
 
           et_build_version=""
           install_scripts_env
@@ -55,7 +55,7 @@ def call(String et_server, String confluence_username, String confluence_passwor
 
           title="Bug Regression Reports For Build ${et_build_version}"
 
-          cd RC_CI-master/auto_testing_CI
+          cd rc_ci/auto_testing_CI
           if [[ "${et_fix_version}" == "" ]]
           then
             echo "There is no exact et_fix_version specified. Let us get the release version from release page"

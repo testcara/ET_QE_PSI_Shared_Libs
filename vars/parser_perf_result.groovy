@@ -38,16 +38,16 @@ def call(String jenkins_username, String jenkins_user_token, String et_build_nam
           export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
 
           echo "===============Download the CI files under $(pwd)=========="
-          wget http://github.com/testcara/RC_CI/archive/master.zip
-          unzip master.zip
-          source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
-          source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+          git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
+
+          source rc_ci/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+          source rc_ci/auto_testing_CI/CI_Shell_common_usage.sh
 
           et_build_version=""
           install_scripts_env
           et_build_version=$(initial_et_build_version ${et_build_name_or_id})
 
-          cd RC_CI-master/auto_testing_CI
+          cd rc_ci/auto_testing_CI
           echo "=== Parser performance report ==="
           sleep 3600000
           python talk_to_rc_jenkins_to_parser_perf_report.py ${username} ${password} ${et_build_version} ${tolerance} ${max_accepted_time} ${perf_jmeter_slave_server}

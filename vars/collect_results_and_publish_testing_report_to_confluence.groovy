@@ -24,7 +24,7 @@ def call(String psi_jenkins_username, String psi_jenkins_password, String conflu
         sh "echo $confluence_password > confluence_password"
         sh "echo $dev_jenkins_username > dev_jenkins_username"
         sh "echo $dev_jenkins_password > dev_jenkins_password"
-        sh "echo $dev_jenkins_job > dev_jenkins_job" 
+        sh "echo $dev_jenkins_job > dev_jenkins_job"
         sh "echo $space > space"
         sh "echo $parent_page > parent_page"
         sh '''
@@ -45,22 +45,22 @@ def call(String psi_jenkins_username, String psi_jenkins_password, String conflu
           export parent_page=$(cat parent_page)
 
           echo "===============Download the CI files under $(pwd)=========="
-          wget http://github.com/testcara/RC_CI/archive/master.zip
-          unzip master.zip
-          source RC_CI-master/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
-          source RC_CI-master/auto_testing_CI/CI_Shell_common_usage.sh
+          git clone https://gitlab.cee.redhat.com/wlin/rc_ci.git
+
+          source rc_ci/auto_testing_CI/CI_Shell_prepare_env_and_scripts.sh
+          source rc_ci/auto_testing_CI/CI_Shell_common_usage.sh
 
           install_scripts_env
           et_build_version=$(initial_et_build_version ${et_build_name_or_id})
           if [[ "$et_build_version" == "" ]]
           then
-            et_build_version=$(python RC_CI-master/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_username} ${dev_jenkins_password} ${dev_jenkins_job})
+            et_build_version=$(python rc_ci/auto_testing_CI/talk_to_rc_jenkins_to_get_the_latest_dev_build.py ${dev_jenkins_username} ${dev_jenkins_password} ${dev_jenkins_job})
           fi
 
           title="ET Testing Reports For Build ${et_build_version}"
           export RC_Jenkins_URL="https://jenkins-errata-qe-test.cloud.paas.psi.redhat.com"
           echo "Collecting all results and generate the report "
-          python RC_CI-master/auto_testing_CI/collect_all_reports_and_update_to_confluence_psi.py "${jenkins_username}" "${jenkins_password}" "${confluence_username}" "${confluence_password}" "${et_build_version}" "${title}" "${space}" "${parent_page}"
+          python rc_ci/auto_testing_CI/collect_all_reports_and_update_to_confluence_psi.py "${jenkins_username}" "${jenkins_password}" "${confluence_username}" "${confluence_password}" "${et_build_version}" "${title}" "${space}" "${parent_page}"
 
           '''
         } //container
