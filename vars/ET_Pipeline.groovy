@@ -36,7 +36,7 @@ persistentVolumeClaim(
 claimName: 'errata-cert',
 mountPath: '/tmp/errata-cert'),
 persistentVolumeClaim(
-claimName: 'mnt-brew',
+claimName: 'brew-qa',
 mountPath: '/mnt/brew'),
  ])
  {
