@@ -31,7 +31,13 @@ def call(String token, String bc_strategy, String appName, String templateNameof
 volumes: [
 persistentVolumeClaim(
 claimName: 'pvc-errata-qe-test-mnt-redhat',
-mountPath: '/mnt/redhat')
+mountPath: '/mnt/redhat'),
+persistentVolumeClaim(
+claimName: 'errata-cert',
+mountPath: '/tmp/errata-cert'),
+persistentVolumeClaim(
+claimName: 'mnt-brew',
+mountPath: '/mnt/brew'),
  ])
  {
 	node(runner) {
