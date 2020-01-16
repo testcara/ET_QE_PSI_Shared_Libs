@@ -35,6 +35,7 @@ mountPath: '/mnt/redhat')
  ])
  {
 	node(runner) {
+        try {
         stage('create mysql app'){
           container('qe-testing-runner'){
             script { FAILED_STAGE=env.STAGE_NAME }
@@ -255,6 +256,7 @@ mountPath: '/mnt/redhat')
             } //container
           } //stage
         } //if
+      }
       finally{
         archiveArtifacts '**/cucumber-report*.json'
         cucumber fileIncludePattern: "**/cucumber-report*.json", sortingMethod: "ALPHABETICAL"
