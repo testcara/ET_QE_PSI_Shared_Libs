@@ -5,6 +5,6 @@ def call(String token, String podName){
       sh '''
       podName=$(cat podName)
       wget ftp://ftp-et-qe.usersys.redhat.com/errata.latest.sql
-      oc exec ${podName} -i -- /opt/rh/rh-mariadb102/root/usr/bin/mysql -uroot -Derrata < errata.latest.sql
+      oc exec ${podName} -n c3i-carawang-123 -i -- /opt/rh/rh-mariadb102/root/usr/bin/mysql -uroot -Derrata < errata.latest.sql
       '''
 }
