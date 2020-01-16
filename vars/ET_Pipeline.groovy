@@ -5,11 +5,11 @@ def call(String token, String bc_strategy, String appName, String templateNameof
 
 	  echo "---> Now, you are using the ET pipeline shared lib ..."
 
-		def RUN_USER = '1011210000'
+		// def RUN_USER = '1011210000'
 		def MYSQL_USER = "errata"
 		def MYSQL_PASSWORD = "errata"
 		def runner= "mypod-${UUID.randomUUID().toString()}"
-		etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
+		// etTemplateParameters = etTemplateParameters + " -p=RUN_USER=$RUN_USER"
 		def FAILED_STAGE
 		def MYSQL_DATABASE = 'errata'
 		def mysqlAppParameters="MYSQL_USER=" + MYSQL_USER + " -e MYSQL_ROOT_PASSWORD="+ MYSQL_PASSWORD + " -e MYSQL_PASSWORD=" + MYSQL_PASSWORD + " -e MYSQL_DATABASE=" + MYSQL_DATABASE
