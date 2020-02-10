@@ -239,7 +239,7 @@ mountPath: '/mnt/brew'),
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject(project_name){
                 sh "echo $current_branch > current_branch"
-                sh "echo $projectName > projectName"
+                sh "echo $project_name > projectName"
                 sh '''
                 current_branch=$(cat current_branch)
                 projectName=$(cat projectName)
