@@ -1,7 +1,6 @@
-def call(String token, String bc_strategy, String appName, String templateNameofET, String templateNameofMysql,
-    String etTemplateParameters, String mysqlTemplateParameters,
-		String templatePathofET, String templatePathofMysql,
-		String qeTesting, String casesTags, String parallel, String current_branch, String remove_pods){
+def call(String token, String project_name, String bc_strategy, String appName, String templateNameofET,
+    String etTemplateParameters, String templatePathofET, String qeTesting, String casesTags,
+    String parallel, String current_branch, String remove_pods){
 
 	  echo "---> Now, you are using the ET pipeline shared lib ..."
 
@@ -49,16 +48,18 @@ mountPath: '/mnt/brew'),
               echo "app-name:${appName}-mariadb-102-rhel7"
               echo "${mysqlAppParameters}"
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                 openshift.withProject('c3i-carawang-123'){
+                 openshift.withProject(project_name){
                   sh "echo ${appName}-mariadb-102-rhel7 > appName"
                   sh "echo $mysqlAppParameters > appParameters"
                   sh "echo $mysqlImageRepo > repoImage"
+                  sh "echo $project_name > projectName"
                   sh '''
-                  app_name=$(cat appName)
+                  appName=$(cat appName)
                   repoImage=$(cat repoImage)
                   appParameters=$(cat appParameters)
-                  echo oc new-app --name=${app_name} -e ${appParameters} ${repoImage}
-                  oc new-app --name=${app_name} -e ${appParameters} ${repoImage} -n c3i-carawang-123
+                  projectName=$(cat projectName)
+                  echo oc new-app --name=${appName} -e ${appParameters} ${repoImage} -n ${projectName}
+                  oc new-app --name=${appName} -e ${appParameters} ${repoImage} -n ${projectName}
                   '''
                 } //project
               } //cluster
@@ -66,15 +67,17 @@ mountPath: '/mnt/brew'),
             retry(2){
               // We would wait 5 mins to make sure its deployed succesfully
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                 openshift.withProject('c3i-carawang-123'){
+                 openshift.withProject(projectName){
                     sh "echo ${appName}-mariadb-102-rhel7 > dcName"
+                    sh "echo ${projectName} > projectName"
                     sh '''
+                        projectName=$(cat projectName)
                         dcName=$(cat dcName)
                         # let us wait 5 mins
                         for i in {1..5}
                         do
                             sleep 60 # 10 seconds
-                            status=$(oc get pods -n c3i-carawang-123 | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
+                            status=$(oc get pods -n ${projectName} | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
                             if [[ ${status} =~ "Running" ]]
                             then
                               echo "---> Deployment complete ..."
@@ -102,16 +105,18 @@ mountPath: '/mnt/brew'),
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
                 openshift.withCluster('https://paas.psi.redhat.com', token) {
-                  openshift.withProject('c3i-carawang-123'){
+                  openshift.withProject(projectName){
                     sh "echo $appName > name"
                     sh "echo $templateNameofET > templateParameters"
                     sh "echo $etTemplateParameters > template"
+                    sh "echo $projectName > projectName"
                     sh '''
+                    projectName=$(cat projectName)
                     app_name=$(cat name)
                     template=$(cat template)
                     templateParameters=$(cat templateParameters)
                     templateParameters="-p=APP_NAME=${app_name} ${templateParameters}"
-                    oc process ${template} ${templateParameters} -n c3i-carawang-123 | oc create -f -  --namespace=c3i-carawang-123 || true
+                    oc process ${template} ${templateParameters} -n ${projectName} | oc create -f -  --namespace=${projectName} || true
                     '''
                   } //project
                 } //cluster
@@ -123,16 +128,17 @@ mountPath: '/mnt/brew'),
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                openshift.withProject('c3i-carawang-123'){
+                openshift.withProject(projectName){
                     sh "echo ${appName}-bc > bcName"
-                    sh "oc start-build ${appName}-bc -n c3i-carawang-123 "
+                    sh "echo ${projectName} > projectName"
+                    sh "oc start-build ${appName}-bc -n ${projectName}"
                     sh '''
                     bcName=$(cat bcName)
                     # let us wait 30 mins
                     for i in {1..60}
                     do
                         sleep 30 # 30 seconds
-                        status=$(oc get build -n c3i-carawang-123 | grep ${bcName} | awk \'{print $4}\')
+                        status=$(oc get build -n ${projectName} | grep ${bcName} | awk \'{print $4}\')
                         if [[ ${status} =~ "Complete" ]]
                         then
                             echo "---> Build complete ..."
@@ -156,17 +162,19 @@ mountPath: '/mnt/brew'),
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                openshift.withProject('c3i-carawang-123'){
+                openshift.withProject(projectName){
+                    sh "echo ${projectName} > projectName"
                     echo "--- Deploy dc: ${appName}-rails--->"
-                    sh "oc rollout latest ${appName}-rails  -n c3i-carawang-123"
+                    sh "oc rollout latest ${appName}-rails  -n ${projectName}"
                     sh "echo ${appName}-rails > dcName"
                     sh '''
                     dcName=$(cat dcName)
+                    projectName=$(cat projectName)
                     # let us wait 5 mins
                     for i in {1..30}
                     do
                         sleep 10 # 10 seconds
-                        status=$(oc get pods -n c3i-carawang-123 | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
+                        status=$(oc get pods -n ${projectName} | grep ${dcName} | grep -v build | grep -v deploy | awk \'{print $3}\')
                         if [[ ${status} =~ "Running" ]]
                         then
                             echo "---> Deployment complete ..."
@@ -191,26 +199,26 @@ mountPath: '/mnt/brew'),
                 script { FAILED_STAGE=env.STAGE_NAME }
                 retry(2) {
                   openshift.withCluster('https://paas.psi.redhat.com', token) {
-                  openshift.withProject('c3i-carawang-123'){
-                    def cmd1="oc get pods -n c3i-carawang-123| grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
+                  openshift.withProject(projectName){
+                    def cmd1="oc get pods -n " + projectName + " | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
                     echo "Got mysqlPod: ${mysqlPod}"
 
-                    def cmd2="oc get pods -n c3i-carawang-123 | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
+                    def cmd2="oc get pods -n " + projectName + " | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
-                    import_sql_files_to_db(token, mysqlPod)
+                    import_sql_files_to_db(projectName, mysqlPod)
                     def db_migration_cmd = "bundle exec rake db:migrate"
-                    run_cmd_against_pod(token, etPod, db_migration_cmd)
+                    run_cmd_against_pod(projectName, etPod, db_migration_cmd)
 
-                    disable_sending_qpid_message(token, etPod)
+                    disable_sending_qpid_message(etPod)
 
                     if(casesTags.contains('UMB')){
-                      specify_cucumber_umb_broker(token, etPod)
+                      specify_cucumber_umb_broker(etPod)
                     }
 
-                    restart_et_service(token, etPod)
+                    restart_et_service(etPod)
 
                     echo "Add the pulp configuration files to runner"
                     sh """
@@ -229,10 +237,12 @@ mountPath: '/mnt/brew'),
             container('qe-testing-runner'){
               script { FAILED_STAGE=env.STAGE_NAME }
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                openshift.withProject('c3i-carawang-123'){
+                openshift.withProject(projectName){
                 sh "echo $current_branch > current_branch"
+                sh "echo $projectName > projectName"
                 sh '''
                 current_branch=$(cat current_branch)
+                projectName=$(cat projectName)
                 git clone https://code.engineering.redhat.com/gerrit/errata-rails
                 cd errata-rails
                 git checkout ${current_branch}
@@ -244,19 +254,19 @@ mountPath: '/mnt/brew'),
                   url: 'https://code.engineering.redhat.com/gerrit/errata-rails'
                 */
 
-                def cmd="oc get pods -n c3i-carawang-123 | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
+                def cmd="oc get pods -n " + projectName + " | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
                 def etPod = sh(returnStdout: true, script: cmd).trim()
                 echo "Got etPod: ${etPod}"
                 def etSVC=""
                 if(bc_strategy == 'docker'){
-                  cmd="oc get svc -n c3i-carawang-123 | grep $appName | cut -d \" \" -f 1"
+                  cmd="oc get svc -n " + projectName + " | grep $appName | cut -d \" \" -f 1"
                   etSVC= sh(returnStdout: true, script: cmd).trim()
                 } //if
                 if(bc_strategy == 's2i'){
-                  cmd="oc get routes -n c3i-carawang-123 | grep $appName | sed  \"s/\\ \\+/ /g\" | cut -d \" \" -f 2"
+                  cmd="oc get routes -n " + projectName + " | grep $appName | sed  \"s/\\ \\+/ /g\" | cut -d \" \" -f 2"
                   etSVC= sh(returnStdout: true, script: cmd).trim()
                 } //if
-                run_ts2_testing(token, appName, etPod, casesTags, etSVC)
+                run_ts2_testing(projectName, appName, etPod, casesTags, etSVC)
                 } //project
               } //cluster
             } //container
@@ -272,9 +282,9 @@ mountPath: '/mnt/brew'),
             retry(2) {
               [appName, "${appName}-mariadb-102-rhel7"].each {
                 if(parallel=="true"){
-                  clean_up_by_oc(token, it, 'app')
+                  clean_up_by_oc(projectName, it, 'app')
                 } else{
-                  clean_up(token, it, 'app')
+                  clean_up(projectName, it, 'app')
                 } //if
               } //each
             } //retry

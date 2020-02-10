@@ -1,4 +1,5 @@
-def call(String token, String app_name, String etPod, String casesFeatures, String app_svc){
+def call(String project_name, String app_name, String etPod, String casesFeatures, String app_svc){
+    sh "echo ${project_name} > project_name"
     sh "echo ${app_svc} > app_svc"
     sh "echo ${app_name} > app_name"
     sh "echo ${etPod} > et_pod"
@@ -19,6 +20,7 @@ def call(String token, String app_name, String etPod, String casesFeatures, Stri
 
       pod_name=$(cat et_pod)
       app_name=$(cat app_name)
+      project_name=$(cat project_name)
       cases_features=$(cat cases_features)
 
       if [[ ${cases_features} =~ "UMB" ]]
@@ -42,8 +44,8 @@ def call(String token, String app_name, String etPod, String casesFeatures, Stri
       sed -i 's/test\\/unit/minitest/g' features/remote/support/env.rb
       sed -i "s/-- bundle exec rails console \\/tmp\\/rails-#{date}\\/Autotasks.txt/-- bash -c 'RAILS_ENV=staging bundle exec rails console \\/tmp\\/rails-#{date}\\/Autotasks.txt'/g" features/remote/support/errata_rails_console.rb
       sed -i "s/-- bundle exec rails runner \\/tmp\\/rails-#{date}\\/Autotasks.txt/-- bash -c 'RAILS_ENV=staging bundle exec rails runner \\/tmp\\/rails-#{date}\\/Autotasks.txt'/g" features/remote/support/errata_rails_console.rb
-      sed -i "s/oc rsync/oc rsync -n c3i-carawang-123/g" features/remote/support/errata_rails_console.rb
-      sed -i "s/oc exec/oc exec -n c3i-carawang-123/g" features/remote/support/errata_rails_console.rb
+      sed -i "s/oc rsync/oc rsync -n ${prject_name}/g" features/remote/support/errata_rails_console.rb
+      sed -i "s/oc exec/oc exec -n ${project_name}/g" features/remote/support/errata_rails_console.rb
 
       RAILS_ENV=test bundle install --path=/opt/rh/rh-ruby22/root/usr/local/bin
       cucumber_cmd="ET_POD=${pod_name} RUN_ON_PSI=1 TEST_ENV=qe_01 ET_ADMIN_PASSWD=redhat BZ_ADMIN_PASSWD=1HSSQE@redhat JBOSS_JIRA_PASSWD=errata-qe bundle exec cucumber -p remote"

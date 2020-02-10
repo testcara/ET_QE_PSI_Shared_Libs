@@ -1,4 +1,4 @@
-def call(String token, String name, String type){
+def call(String name, String type){
         echo "---> Cleanup ..."
         switch(type) {
             case 'app':
