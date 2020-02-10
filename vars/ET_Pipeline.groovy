@@ -131,9 +131,10 @@ mountPath: '/mnt/brew'),
                 openshift.withProject(project_name){
                     sh "echo ${appName}-bc > bcName"
                     sh "echo ${project_name} > projectName"
-                    sh "oc start-build ${appName}-bc -n ${projectName}"
+                    sh "oc start-build ${appName}-bc -n ${project_name}"
                     sh '''
                     bcName=$(cat bcName)
+                    projectName=$(cat projectName)
                     # let us wait 30 mins
                     for i in {1..60}
                     do
@@ -165,7 +166,7 @@ mountPath: '/mnt/brew'),
                 openshift.withProject(project_name){
                     sh "echo ${project_name} > projectName"
                     echo "--- Deploy dc: ${appName}-rails--->"
-                    sh "oc rollout latest ${appName}-rails  -n ${projectName}"
+                    sh "oc rollout latest ${appName}-rails  -n ${project_name}"
                     sh "echo ${appName}-rails > dcName"
                     sh '''
                     dcName=$(cat dcName)
