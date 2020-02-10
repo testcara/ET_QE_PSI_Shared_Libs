@@ -67,9 +67,9 @@ mountPath: '/mnt/brew'),
             retry(2){
               // We would wait 5 mins to make sure its deployed succesfully
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                 openshift.withProject(projectName){
+                 openshift.withProject(project_name){
                     sh "echo ${appName}-mariadb-102-rhel7 > dcName"
-                    sh "echo ${projectName} > projectName"
+                    sh "echo ${project_name} > projectName"
                     sh '''
                         projectName=$(cat projectName)
                         dcName=$(cat dcName)
@@ -105,11 +105,11 @@ mountPath: '/mnt/brew'),
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
                 openshift.withCluster('https://paas.psi.redhat.com', token) {
-                  openshift.withProject(projectName){
+                  openshift.withProject(project_name){
                     sh "echo $appName > name"
                     sh "echo $templateNameofET > templateParameters"
                     sh "echo $etTemplateParameters > template"
-                    sh "echo $projectName > projectName"
+                    sh "echo $project_name > projectName"
                     sh '''
                     projectName=$(cat projectName)
                     app_name=$(cat name)
@@ -128,9 +128,9 @@ mountPath: '/mnt/brew'),
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                openshift.withProject(projectName){
+                openshift.withProject(project_name){
                     sh "echo ${appName}-bc > bcName"
-                    sh "echo ${projectName} > projectName"
+                    sh "echo ${project_name} > projectName"
                     sh "oc start-build ${appName}-bc -n ${projectName}"
                     sh '''
                     bcName=$(cat bcName)
@@ -162,7 +162,7 @@ mountPath: '/mnt/brew'),
             script { FAILED_STAGE=env.STAGE_NAME }
             retry(2) {
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                openshift.withProject(projectName){
+                openshift.withProject(project_name){
                     sh "echo ${projectName} > projectName"
                     echo "--- Deploy dc: ${appName}-rails--->"
                     sh "oc rollout latest ${appName}-rails  -n ${projectName}"
@@ -199,18 +199,18 @@ mountPath: '/mnt/brew'),
                 script { FAILED_STAGE=env.STAGE_NAME }
                 retry(2) {
                   openshift.withCluster('https://paas.psi.redhat.com', token) {
-                  openshift.withProject(projectName){
-                    def cmd1="oc get pods -n " + projectName + " | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
+                  openshift.withProject(project_name){
+                    def cmd1="oc get pods -n " + project_name + " | grep ${appName}-mariadb-102-rhel7 | grep -v build | grep -v deploy | grep Running |cut -d ' ' -f 1"
                     def mysqlPod = sh(returnStdout: true, script: cmd1).trim()
                     echo "Got mysqlPod: ${mysqlPod}"
 
-                    def cmd2="oc get pods -n " + projectName + " | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
+                    def cmd2="oc get pods -n " + project_name + " | grep ${appName}-rails | grep -v build | grep -v deploy | grep Running | cut -d ' ' -f 1"
                     def etPod = sh(returnStdout: true, script: cmd2).trim()
                     echo "Got etPod: ${etPod}"
 
-                    import_sql_files_to_db(projectName, mysqlPod)
+                    import_sql_files_to_db(project_name, mysqlPod)
                     def db_migration_cmd = "bundle exec rake db:migrate"
-                    run_cmd_against_pod(projectName, etPod, db_migration_cmd)
+                    run_cmd_against_pod(project_name, etPod, db_migration_cmd)
 
                     disable_sending_qpid_message(etPod)
 
@@ -237,7 +237,7 @@ mountPath: '/mnt/brew'),
             container('qe-testing-runner'){
               script { FAILED_STAGE=env.STAGE_NAME }
               openshift.withCluster('https://paas.psi.redhat.com', token) {
-                openshift.withProject(projectName){
+                openshift.withProject(project_name){
                 sh "echo $current_branch > current_branch"
                 sh "echo $projectName > projectName"
                 sh '''
@@ -254,19 +254,19 @@ mountPath: '/mnt/brew'),
                   url: 'https://code.engineering.redhat.com/gerrit/errata-rails'
                 */
 
-                def cmd="oc get pods -n " + projectName + " | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
+                def cmd="oc get pods -n " + project_name + " | grep ${appName}-rails | grep -v build | cut -d ' ' -f 1"
                 def etPod = sh(returnStdout: true, script: cmd).trim()
                 echo "Got etPod: ${etPod}"
                 def etSVC=""
                 if(bc_strategy == 'docker'){
-                  cmd="oc get svc -n " + projectName + " | grep $appName | cut -d \" \" -f 1"
+                  cmd="oc get svc -n " + project_name + " | grep $appName | cut -d \" \" -f 1"
                   etSVC= sh(returnStdout: true, script: cmd).trim()
                 } //if
                 if(bc_strategy == 's2i'){
-                  cmd="oc get routes -n " + projectName + " | grep $appName | sed  \"s/\\ \\+/ /g\" | cut -d \" \" -f 2"
+                  cmd="oc get routes -n " + project_name + " | grep $appName | sed  \"s/\\ \\+/ /g\" | cut -d \" \" -f 2"
                   etSVC= sh(returnStdout: true, script: cmd).trim()
                 } //if
-                run_ts2_testing(projectName, appName, etPod, casesTags, etSVC)
+                run_ts2_testing(project_name, appName, etPod, casesTags, etSVC)
                 } //project
               } //cluster
             } //container
@@ -282,9 +282,9 @@ mountPath: '/mnt/brew'),
             retry(2) {
               [appName, "${appName}-mariadb-102-rhel7"].each {
                 if(parallel=="true"){
-                  clean_up_by_oc(projectName, it, 'app')
+                  clean_up_by_oc(project_name, it, 'app')
                 } else{
-                  clean_up(projectName, it, 'app')
+                  clean_up(project_name, it, 'app')
                 } //if
               } //each
             } //retry
