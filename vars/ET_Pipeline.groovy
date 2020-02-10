@@ -163,7 +163,7 @@ mountPath: '/mnt/brew'),
             retry(2) {
               openshift.withCluster('https://paas.psi.redhat.com', token) {
                 openshift.withProject(project_name){
-                    sh "echo ${projectName} > projectName"
+                    sh "echo ${project_name} > projectName"
                     echo "--- Deploy dc: ${appName}-rails--->"
                     sh "oc rollout latest ${appName}-rails  -n ${projectName}"
                     sh "echo ${appName}-rails > dcName"
