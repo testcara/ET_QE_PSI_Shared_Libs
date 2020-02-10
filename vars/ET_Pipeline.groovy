@@ -213,13 +213,13 @@ mountPath: '/mnt/brew'),
                     def db_migration_cmd = "bundle exec rake db:migrate"
                     run_cmd_against_pod(project_name, etPod, db_migration_cmd)
 
-                    disable_sending_qpid_message(etPod)
+                    disable_sending_qpid_message(project_name, etPod)
 
                     if(casesTags.contains('UMB')){
-                      specify_cucumber_umb_broker(etPod)
+                      specify_cucumber_umb_broker(project_name, etPod)
                     }
 
-                    restart_et_service(etPod)
+                    restart_et_service(project_name, etPod)
 
                     echo "Add the pulp configuration files to runner"
                     sh """
